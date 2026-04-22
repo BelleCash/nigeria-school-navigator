@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Navigator | Mobile Layout</title>
+    <style>
+        :root {
+            --primary: #008751; /* Nigerian Green */
+            --bg: #f4f4f4;
+            --text: #333;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 15px;
+        }
+
+        .header {
+            margin-bottom: 20px;
+        }
+
+        /* The Grid System */
+        .school-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Single column for mobile */
+            gap: 15px;
+        }
+
+        /* Card Styling */
+        .school-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 5px solid var(--primary);
+        }
+
+        .school-name {
+            font-size: 1.2rem;
+            margin: 0 0 5px 0;
+            color: var(--primary);
+        }
+
+        .location {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #e0f2f1;
+            color: #00695c;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>School Navigator</h1>
+        <p>Showing schools in Lagos State</p>
+    </div>
+
+    <div class="school-grid">
+        <div class="school-card">
+            <h2 class="school-name">King's College</h2>
+            <div class="location">Lagos Island, Lagos</div>
+            <span class="tag">Secondary</span>
+        </div>
+
+        <div class="school-card">
+            <h2 class="school-name">Queens College</h2>
+            <div class="location">Yaba, Lagos</div>
+            <span class="tag">Secondary</span>
+        </div>
+      
+        <div class="school-card">
+            <h2 class="school-name">CMS Grammar School</h2>
+            <div class="location">Bariga, Lagos</div>
+            <span class="tag">Secondary</span>
+        </div>
+    </div>
+
+</body>
+</html>
