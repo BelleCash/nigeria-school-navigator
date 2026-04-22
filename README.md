@@ -43,3 +43,15 @@ Handling data for a country as large as Nigeria requires a performance-first app
 1. **Clone the repository**
    ```bash
    git clone [https://github.com/BelleCash/nigeria-school-navigator.git](https://github.com/BelleCash/nigeria-school-navigator.git)
+Explore the Phases
+Each week's progress is organized into its own folder. Start with /Phase-1-Web-Foundations to see the initial mobile layouts.
+
+Development (Coming in Week 3)
+Once the React framework is initialized:
+npm install
+npm run dev
+📜 License
+This project is licensed under the MIT License, encouraging open-source collaboration and community growth within the Nigerian tech ecosystem.
+
+Strategy Note
+The 10/50 Rule: This repository is built using a strict 1-hour daily sprint. 10 minutes are spent on theory and documentation, while 50 minutes are dedicated to active coding. This ensures maximum output and deep practical understanding of the technical architecture.
