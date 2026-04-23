@@ -46,6 +46,9 @@ Handling data for a country as large as Nigeria requires a performance-first app
 Explore the Phases
 Each week's progress is organized into its own folder. Start with /Phase-1-Web-Foundations to see the initial mobile layouts.
 
+**WORK PROGRESS**
+https://bellecash.github.io/nigeria-school-navigator/Phase-1-Web-Foundations/index.html
+
 Development (Coming in Week 3)
 Once the React framework is initialized:
 npm install
