@@ -9,6 +9,12 @@
             --primary: #008751; /* Nigerian Green */
             --bg: #f4f4f4;
             --text: #333;
+            --nigerian-green: #008751;
+            --card-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .school-card {
+            border-left: 5px solid var(--nigerian-green);
+            box-shadow: var(--card-shadow);
         }
 
         body {
@@ -28,6 +34,14 @@
             display: grid;
             grid-template-columns: 1fr; /* Single column for mobile */
             gap: 15px;
+        }
+        /* This tells the browser: "If the screen is wider than 768px, change the grid" */
+        @media (min-width: 768px) {
+            .school-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr; /* Two columns for tablets */
+                gap: 20px;
+            }
         }
 
         /* Card Styling */
