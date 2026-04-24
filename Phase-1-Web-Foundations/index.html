@@ -1,125 +1,2157 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Navigator | Mobile Layout</title>
-    <style>
-        :root {
-            --primary: #008751; /* Nigerian Green */
-            --bg: #f4f4f4;
-            --text: #333;
-            --nigerian-green: #008751;
-            --card-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .school-card {
-            border-left: 5px solid var(--nigerian-green);
-            box-shadow: var(--card-shadow);
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>School Navigator | Day 3 Typography & Flexbox</title>
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 15px;
-        }
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
 
-        .header {
-            margin-bottom: 20px;
-        }
+  <style>
+    :root {
+      --nigerian-green: #008751;
+      --bg: #f4f4f4;
+      --text-dark: #1a1a1a;
+      --text-gray: #666;
+      --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
-        /* The Grid System */
-        .school-grid {
-            display: grid;
-            grid-template-columns: 1fr; /* Single column for mobile */
-            gap: 15px;
-        }
-        /* This tells the browser: "If the screen is wider than 768px, change the grid" */
-        @media (min-width: 768px) {
-            .school-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr; /* Two columns for tablets */
-                gap: 20px;
-            }
-        }
+    body {
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      background-color: var(--bg);
+      color: var(--text-dark);
+      margin: 0;
+      padding: 20px;
+    }
 
-        /* Card Styling */
-        .school-card {
-            background: white;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            border-left: 5px solid var(--primary);
-        }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
 
-        .school-name {
-            font-size: 1.2rem;
-            margin: 0 0 5px 0;
-            color: var(--primary);
-        }
+    .header {
+      margin-bottom: 30px;
+      border-bottom: 2px solid var(--nigerian-green);
+      padding-bottom: 10px;
+    }
 
-        .location {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 10px;
-        }
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
 
-        .tag {
-            display: inline-block;
-            background: #e0f2f1;
-            color: #00695c;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-    </style>
+    .header p {
+      margin: 5px 0 0 0;
+      color: var(--text-gray);
+    }
+
+    .school-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    @media (min-width: 768px) {
+      .school-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .school-card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: var(--card-shadow);
+      border-left: 5px solid var(--nigerian-green);
+      transition: transform 0.2s ease;
+    }
+
+    .school-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .school-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin: 0;
+      color: var(--nigerian-green);
+      padding-right: 10px;
+    }
+
+    .tag {
+      background: #e8f5e9;
+      color: var(--nigerian-green);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .location {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-gray);
+      margin: 0;
+    }
+
+    .address {
+      font-size: 0.85rem;
+      color: #888;
+      margin: 5px 0 0 0;
+    }
+  </style>
 </head>
+
 <body>
 
-    <div class="header">
-        <h1>School Navigator</h1>
-        <p>Showing schools in Lagos State</p>
-    </div>
+  <div class="container">
+  <!-- MAIN HEADER (only once) -->
+<div class="main-header">
+  <h1>School Navigator</h1>
+</div>
 
-    <div class="school-grid">
+
+    <!-- LAGOS -->
+    <section class="state-section">
+  <h2>Lagos State</h2>
+
+      <div class="school-grid">
+
         <div class="school-card">
+          <div class="card-header">
             <h2 class="school-name">King's College</h2>
-            <div class="location">Lagos Island, Lagos</div>
-            <p style="font-size: 0.85rem; color: #888; margin-top: 5px;">
-                3 Adeyemo Alakija St, Victoria Island
-            </p>
             <span class="tag">Secondary</span>
+          </div>
+          <p class="location">Lagos Island, Lagos</p>
+          <p class="address">3 Adeyemo Alakija St, Victoria Island</p>
         </div>
 
         <div class="school-card">
-            <h2 class="school-name">Queens College</h2>
-            <div class="location">Yaba, Lagos</div>
-            <p style="font-size: 0.85rem; color: #888; margin-top: 5px;">
-                Lancaster Road, Opposite Old People’s Home, Sabo
-            </p>
+          <div class="card-header">
+            <h2 class="school-name">Queen's College</h2>
             <span class="tag">Secondary</span>
+          </div>
+          <p class="location">Yaba, Lagos</p>
+          <p class="address">Sabo, Yaba</p>
         </div>
-      
+
         <div class="school-card">
+          <div class="card-header">
             <h2 class="school-name">CMS Grammar School</h2>
-            <div class="location">Bariga, Lagos</div>
-             <p style="font-size: 0.85rem; color: #888; margin-top: 5px;">
-                 Asani Road, Bariga, Lagos
-             </p>
             <span class="tag">Secondary</span>
+          </div>
+          <p class="location">Bariga, Lagos</p>
+          <p class="address">Bariga, Lagos</p>
         </div>
 
         <div class="school-card">
-            <h2 class="school-name">Grange School</h2>
-            <div class="location">Ikeja GRA, Lagos</div>
-            <p style="font-size: 0.85rem; color: #888; margin-top: 5px;">
-                Harold Sodipo Crescent, Ikeja GRA, Lagos
-            </p>
-            <span class="tag">Secondary</span>
+          <div class="card-header">
+            <h2 class="school-name">Lagos State University</h2>
+            <span class="tag">Tertiary</span>
+          </div>
+          <p class="location">Ojo, Lagos</p>
+          <p class="address">Badagry Expressway</p>
         </div>
+
+        <div class="school-card">
+          <div class="card-header">
+            <h2 class="school-name">University of Lagos</h2>
+            <span class="tag">Tertiary</span>
+          </div>
+          <p class="location">Akoka, Lagos</p>
+          <p class="address">Akoka Campus</p>
+        </div>
+
+        <div class="school-card">
+          <div class="card-header">
+            <h2 class="school-name">Grange School</h2>
+            <span class="tag">Secondary</span>
+          </div>
+          <p class="location">Ikeja GRA, Lagos</p>
+          <p class="address">Harold Sodipo Crescent</p>
+        </div>
+
+        <div class="school-card">
+          <div class="card-header">
+            <h2 class="school-name">Chrisland School</h2>
+            <span class="tag">Secondary</span>
+          </div>
+          <p class="location">Lekki, Lagos</p>
+          <p class="address">Lekki Peninsula</p>
+        </div>
+
+        <div class="school-card">
+          <div class="card-header">
+            <h2 class="school-name">Atlantic Hall</h2>
+            <span class="tag">Secondary</span>
+          </div>
+          <p class="location">Epe, Lagos</p>
+          <p class="address">Poka, Epe</p>
+        </div>
+
+        <div class="school-card">
+          <div class="card-header">
+            <h2 class="school-name">Holy Child College</h2>
+            <span class="tag">Secondary</span>
+          </div>
+          <p class="location">Ikoyi, Lagos</p>
+          <p class="address">Ikoyi Road</p>
+        </div>
+
+        <div class="school-card">
+          <div class="card-header">
+            <h2 class="school-name">Yaba College of Technology</h2>
+            <span class="tag">Tertiary</span>
+          </div>
+          <p class="location">Yaba, Lagos</p>
+          <p class="address">Herbert Macaulay Rd</p>
+        </div>
+
+      </div>
+
+    </section>
+
+  <!-- FCT -->
+<section class="state-section">
+  <h2>Federal Capital Territory (FCT)</h2>
+    
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">University of Abuja</h2>
+      <span class="tag">Tertiary</span>
     </div>
+    <p class="location">Abuja, FCT</p>
+    <p class="address">PMB 117, Abuja</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Nile University of Nigeria</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Abuja, FCT</p>
+    <p class="address">Jabi, Abuja</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Veritas University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Bwari, Abuja</p>
+    <p class="address">Bwari Area Council</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Secondary School, Garki</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Garki, Abuja</p>
+    <p class="address">Area 1, Garki</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Model Secondary School, Maitama</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Maitama, Abuja</p>
+    <p class="address">Maitama District</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">LEA Primary School, Wuse</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Wuse, Abuja</p>
+    <p class="address">Zone 2</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">LEA Primary School, Kubwa</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Kubwa, Abuja</p>
+    <p class="address">Kubwa District</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">FGC Kwali</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Kwali, FCT</p>
+    <p class="address">Kwali Area Council</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Science School, Pyakasa</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Lokogoma, Abuja</p>
+    <p class="address">Pyakasa District</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">LEA Primary School, Gwarinpa</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Gwarinpa, Abuja</p>
+    <p class="address">Gwarinpa Estate</p>
+  </div>
+
+</div>
+
+<!-- ABIA STATE -->
+<section class="state-section">
+  <h2>Abia State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Abia State University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Uturu, Abia State</p>
+    <p class="address">P.M.B. 2000</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Federal University of Agriculture Umudike</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Umudike, Abia State</p>
+    <p class="address">P.M.B. 7006</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Federal College of Education Arochukwu</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Arochukwu, Abia State</p>
+    <p class="address">P.M.B. 1050</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Secondary School Aba</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Aba, Abia State</p>
+    <p class="address">Aba Township</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Bende Grammar School</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Bende, Abia State</p>
+    <p class="address">Bende Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Umuahia High School</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Umuahia, Abia State</p>
+    <p class="address">Okigwe Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Isiukwuato Community School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Isiukwuato, Abia State</p>
+    <p class="address">Isiukwuato Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Aba Township Primary School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Aba, Abia State</p>
+    <p class="address">Township Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Eziama Community School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Eziama, Abia State</p>
+    <p class="address">Eziama Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Obingwa Secondary School</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Obingwa, Abia State</p>
+    <p class="address">Obingwa Road</p>
+  </div>
+
+</div>
+
+<!-- ADAMAWA STATE -->
+<section class="state-section">
+  <h2>Adamawa State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Federal University of Technology Yola</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Yola, Adamawa State</p>
+    <p class="address">P.M.B. 2084</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Adamawa State University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Mubi, Adamawa State</p>
+    <p class="address">P.M.B. 2140</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Federal College of Education Yola</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Yola, Adamawa State</p>
+    <p class="address">P.M.B. 2079</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Secondary School Jimeta</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Yola, Adamawa State</p>
+    <p class="address">Jimeta Area</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Ganye Secondary School</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Ganye, Adamawa State</p>
+    <p class="address">Ganye Town</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Demsa Secondary School</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Demsa, Adamawa State</p>
+    <p class="address">Demsa Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Maiha Community School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Maiha, Adamawa State</p>
+    <p class="address">Maiha Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Lamurde Community School</h2>
+    </div>
+    <p class="location">Lamurde, Adamawa State</p>
+    <p class="address">Lamurde Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Uba Community School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Uba, Adamawa State</p>
+    <p class="address">Uba Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Garkida Secondary School</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Garkida, Adamawa State</p>
+    <p class="address">Garkida Road</p>
+  </div>
+
+</div>
+
+  <!-- AKWA IBOM STATE -->
+<section class="state-section">
+  <h2>Akwa Ibom State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">University of Uyo</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Uyo, Akwa Ibom State</p>
+    <p class="address">P.M.B. 1017</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Akwa Ibom State University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Ikot Akpaden, Akwa Ibom State</p>
+    <p class="address">P.M.B. 1431</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Federal College of Education Afaha Nsit</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Afaha Nsit, Akwa Ibom State</p>
+    <p class="address">P.M.B. 1005</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Secondary School Ikot Ekpene</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Ikot Ekpene</p>
+    <p class="address">Ikot Ekpene Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Abak Secondary School</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Abak</p>
+    <p class="address">Abak Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Eket Community School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Eket</p>
+    <p class="address">Eket Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Etim Ekpo Community School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Etim Ekpo</p>
+    <p class="address">Etim Ekpo Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Ikot Abasi Community School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Ikot Abasi</p>
+    <p class="address">Ikot Abasi Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Itu Secondary School</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Itu</p>
+    <p class="address">Itu Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Uyo Township Primary School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Uyo</p>
+    <p class="address">Township Road</p>
+  </div>
+
+</div>
+
+
+<!-- ANAMBRA STATE -->
+<section class="state-section">
+  <h2>Anambra State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Chukwuemeka Odumegwu Ojukwu University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Uli, Anambra State</p>
+    <p class="address">Igbariam Campus</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Nnamdi Azikiwe University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Awka, Anambra State</p>
+    <p class="address">Ifite Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Federal College of Education Umunze</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Umunze</p>
+    <p class="address">P.M.B. 1011</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Christ the King College</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Onitsha</p>
+    <p class="address">Onitsha Main</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Dennis Memorial Grammar School</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Onitsha</p>
+    <p class="address">Mission Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Queen of the Rosary College</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Onitsha</p>
+    <p class="address">Basilica Area</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Community School Agulu</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Agulu</p>
+    <p class="address">Agulu Town</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Ekwulobia Community School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Ekwulobia</p>
+    <p class="address">Ekwulobia Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Njikoka Community School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Njikoka</p>
+    <p class="address">Njikoka Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Otuocha Secondary School</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Otuocha</p>
+    <p class="address">Otuocha Road</p>
+  </div>
+
+</div>
+
+
+<!-- BAUCHI STATE -->
+<section class="state-section">
+  <h2>Bauchi State</h2>
+    
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Bauchi State University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Gadau</p>
+    <p class="address">P.M.B. 768</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Abubakar Tafawa Balewa University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Bauchi</p>
+    <p class="address">Gubi Campus</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Federal Polytechnic Bauchi</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Bauchi</p>
+    <p class="address">PMB 023</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Girls College Bauchi</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Bauchi</p>
+    <p class="address">Yelwa Area</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government College Bauchi</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Bauchi</p>
+    <p class="address">Tafawa Balewa Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Shira Secondary School</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Shira</p>
+    <p class="address">Shira Town</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Alkaleri Community School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Alkaleri</p>
+    <p class="address">Alkaleri Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Itas Gadau Community School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Itas Gadau</p>
+    <p class="address">Itas Gadau Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Dass Community School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Dass</p>
+    <p class="address">Dass Town</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Tafawa Balewa Community School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Tafawa Balewa</p>
+    <p class="address">Tafawa Balewa Road</p>
+  </div>
+
+</div>
+
+<!-- BAYELSA STATE -->
+<section class="state-section">
+  <h2>Bayelsa State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Niger Delta University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Amassoma, Bayelsa State</p>
+    <p class="address">Wilberforce Island</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Federal University Otuoke</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Otuoke, Bayelsa State</p>
+    <p class="address">Otuoke Campus</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Bayelsa Medical University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Yenagoa, Bayelsa State</p>
+    <p class="address">Swali Area</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Secondary School Yenagoa</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Yenagoa, Bayelsa State</p>
+    <p class="address">Mbiama Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Ekeremor Secondary School</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Ekeremor, Bayelsa State</p>
+    <p class="address">Ekeremor Town</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Ogbia Community School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Ogbia, Bayelsa State</p>
+    <p class="address">Ogbia Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Brass Community School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Brass, Bayelsa State</p>
+    <p class="address">Brass Island</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Kolokuma Community School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Kolokuma, Bayelsa State</p>
+    <p class="address">Kolokuma Area</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Oporoma Community School</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Oporoma, Bayelsa State</p>
+    <p class="address">Southern Ijaw</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Kaiama Secondary School</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Kaiama, Bayelsa State</p>
+    <p class="address">Kaiama Town</p>
+  </div>
+
+</div>
+
+
+<!-- BENUE STATE -->
+<section class="state-section">
+  <h2>Benue State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Benue State University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Makurdi, Benue State</p>
+    <p class="address">P.M.B. 102119</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">University of Agriculture Makurdi</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Makurdi, Benue State</p>
+    <p class="address">P.M.B. 2373</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Secondary School Gboko</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Gboko, Benue State</p>
+    <p class="address">Gboko Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Community Secondary School Otukpo</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Otukpo, Benue State</p>
+    <p class="address">Otukpo Road</p>
+  </div>
+
+</div>
+
+
+<!-- BORNO STATE -->
+<section class="state-section">
+  <h2>Borno State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">University of Maiduguri</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Maiduguri, Borno State</p>
+    <p class="address">P.M.B. 1069</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Borno State University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Maiduguri, Borno State</p>
+    <p class="address">Maiduguri Campus</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Secondary School Maiduguri</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Maiduguri, Borno State</p>
+    <p class="address">Shehu Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Community School Biu</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Biu, Borno State</p>
+    <p class="address">Biu Road</p>
+  </div>
+
+</div>
+
+
+<!-- CROSS RIVER STATE -->
+<section class="state-section">
+  <h2>Cross River State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">University of Calabar</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Calabar, Cross River State</p>
+    <p class="address">P.M.B. 1115</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Cross River State University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Calabar, Cross River State</p>
+    <p class="address">Calabar Campus</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Secondary School Ogoja</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Ogoja, Cross River State</p>
+    <p class="address">Ogoja Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Community School Ugep</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Ugep, Cross River State</p>
+    <p class="address">Ugep Road</p>
+  </div>
+
+</div>
+
+
+<!-- DELTA STATE -->
+<section class="state-section">
+  <h2>Delta State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Delta State University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Abraka, Delta State</p>
+    <p class="address">P.M.B. 1</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Western Delta University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Oghara, Delta State</p>
+    <p class="address">Oghara Campus</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Secondary School Warri</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Warri, Delta State</p>
+    <p class="address">Warri Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Community School Sapele</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Sapele, Delta State</p>
+    <p class="address">Sapele Road</p>
+  </div>
+
+</div>
+
+    <!-- EBONYI STATE -->
+<section class="state-section">
+  <h2>Ebonyi State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Ebonyi State University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Abakaliki, Ebonyi State</p>
+    <p class="address">P.M.B. 053, Abakaliki</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Alex Ekwueme Federal University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Ndufu-Alike, Ebonyi State</p>
+    <p class="address">Ikwo Campus</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Secondary School Abakaliki</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Abakaliki, Ebonyi State</p>
+    <p class="address">Abakaliki Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Community School Afikpo</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Afikpo, Ebonyi State</p>
+    <p class="address">Afikpo Road</p>
+  </div>
+
+</div>
+
+
+<!-- EKITI STATE -->
+<section class="state-section">
+  <h2>Ekiti State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Ekiti State University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Ado-Ekiti, Ekiti State</p>
+    <p class="address">P.M.B. 5363, Ado-Ekiti</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Federal University Oye-Ekiti</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Oye-Ekiti, Ekiti State</p>
+    <p class="address">Oye Campus</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Christ's School Ado-Ekiti</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Ado-Ekiti, Ekiti State</p>
+    <p class="address">Ilupeju Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Ado Grammar School</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Ado-Ekiti, Ekiti State</p>
+    <p class="address">Central Ado-Ekiti</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Community Primary School Ikere</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Ikere-Ekiti, Ekiti State</p>
+    <p class="address">Ikere Road</p>
+  </div>
+
+</div>
+
+
+<!-- ENUGU STATE -->
+<section class="state-section">
+  <h2>Enugu State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">University of Nigeria Nsukka</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Nsukka, Enugu State</p>
+    <p class="address">P.M.B. 001, Nsukka</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Enugu State University of Science and Technology</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Enugu, Enugu State</p>
+    <p class="address">Agbani Campus</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Holy Ghost Secondary School</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Enugu, Enugu State</p>
+    <p class="address">Ogui Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Queen’s School Enugu</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Enugu, Enugu State</p>
+    <p class="address">Achara Layout</p>
+  </div>
+
+</div>
+
+
+<!-- GOMBE STATE -->
+<section class="state-section">
+  <h2>Gombe State</h2>
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Federal University Kashere</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Kashere, Gombe State</p>
+    <p class="address">P.M.B. 0182</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Gombe State University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Gombe, Gombe State</p>
+    <p class="address">Tudun Wada</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Science Secondary School Gombe</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Gombe, Gombe State</p>
+    <p class="address">Government House Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Community School Dukku</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Dukku, Gombe State</p>
+    <p class="address">Dukku Road</p>
+  </div>
+
+</div>
+
+
+<!-- IMO STATE -->
+<section class="state-section">
+  <h2>Imo State</h2>
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Federal University of Technology Owerri</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Owerri, Imo State</p>
+    <p class="address">P.M.B. 1526</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Imo State University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Owerri, Imo State</p>
+    <p class="address">Owerri West Campus</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Secondary School Owerri</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Owerri, Imo State</p>
+    <p class="address">Douglas Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Holy Ghost College Owerri</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Owerri, Imo State</p>
+    <p class="address">Assumpta Avenue</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Community Primary School Orlu</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Orlu, Imo State</p>
+    <p class="address">Orlu Road</p>
+  </div>
+
+</div>
+
+    <!-- JIGAWA -->
+<section class="state-section">
+  <h2>Jigawa State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Federal University Dutse</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Dutse, Jigawa State</p>
+    <p class="address">P.M.B. 7156, Dutse</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Jigawa State University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Kafin Hausa, Jigawa State</p>
+    <p class="address">Kafin Hausa Campus</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Secondary School, Dutse</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Dutse, Jigawa State</p>
+    <p class="address">Dutse Central</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Community Primary School, Hadejia</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Hadejia, Jigawa State</p>
+    <p class="address">Hadejia Road</p>
+  </div>
+
+</div>
+
+<!-- KADUNA -->
+<section class="state-section">
+  <h2>Kaduna State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Ahmadu Bello University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Zaria, Kaduna State</p>
+    <p class="address">P.M.B. 1045, Zaria</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Kaduna State University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Kaduna, Kaduna State</p>
+    <p class="address">Tafawa Balewa Way</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government College, Kaduna</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Kaduna, Kaduna State</p>
+    <p class="address">Kakuri Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Queen Amina College</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Kaduna, Kaduna State</p>
+    <p class="address">Barnawa, Kaduna</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Community Primary School, Zaria</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Zaria, Kaduna State</p>
+    <p class="address">Zaria City Road</p>
+  </div>
+
+</div>
+
+<!-- KANO -->
+<section class="state-section">
+  <h2>Kano State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Bayero University Kano</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Kano, Kano State</p>
+    <p class="address">P.M.B. 3011, Kano</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Northwest University Kano</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Kano, Kano State</p>
+    <p class="address">Kofar Ruwa Campus</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Secondary School, Kano</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Kano, Kano State</p>
+    <p class="address">Bompai Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Rumfa College</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Kano, Kano State</p>
+    <p class="address">Kofar Nassarawa</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Community Primary School, Dala</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Dala, Kano State</p>
+    <p class="address">Dala District</p>
+  </div>
+
+</div>
+
+<!-- KATSINA -->
+<section class="state-section">
+  <h2>Katsina State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Federal University Dutsin-Ma</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Dutsin-Ma, Katsina State</p>
+    <p class="address">P.M.B. 5001, Dutsin-Ma</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Umaru Musa Yar’adua University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Katsina, Katsina State</p>
+    <p class="address">P.M.B. 2218, Katsina</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government College Katsina</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Katsina, Katsina State</p>
+    <p class="address">Kofar Sauri Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Community Primary School, Funtua</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Funtua, Katsina State</p>
+    <p class="address">Funtua Central</p>
+  </div>
+
+</div>
+
+<!-- KEBBI -->
+<section class="state-section">
+  <h2>Kebbi State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Federal University Birnin Kebbi</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Birnin Kebbi, Kebbi State</p>
+    <p class="address">P.M.B. 1157, Birnin Kebbi</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Kebbi State University of Science and Technology</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Aliero, Kebbi State</p>
+    <p class="address">Aliero Campus</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Secondary School, Birnin Kebbi</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Birnin Kebbi, Kebbi State</p>
+    <p class="address">Kalgo Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Community Primary School, Argungu</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Argungu, Kebbi State</p>
+    <p class="address">Argungu Town</p>
+  </div>
+
+</div>
+
+<!-- KOGI -->
+<section class="state-section">
+  <h2>Kogi State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Federal University Lokoja</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Lokoja, Kogi State</p>
+    <p class="address">P.M.B. 1154, Lokoja</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Kogi State University (Prince Abubakar Audu University)</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Anyigba, Kogi State</p>
+    <p class="address">Anyigba Campus</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Government Secondary School, Lokoja</h2>
+      <span class="tag">Secondary</span>
+    </div>
+    <p class="location">Lokoja, Kogi State</p>
+    <p class="address">Mount Patti Road</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Community Primary School, Idah</h2>
+      <span class="tag">Primary</span>
+    </div>
+    <p class="location">Idah, Kogi State</p>
+    <p class="address">Idah Central</p>
+  </div>
+
+</div>
+
+<!-- KWARA -->
+<section class="state-section">
+  <h2>Kwara State</h2>
+
+<div class="school-grid">
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">University of Ilorin</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Ilorin, Kwara State</p>
+    <p class="address">P.M.B. 1515, Ilorin</p>
+  </div>
+
+  <div class="school-card">
+    <div class="card-header">
+      <h2 class="school-name">Kwara State University</h2>
+      <span class="tag">Tertiary</span>
+    </div>
+    <p class="location">Malete, Kwara State</p>
+    <p class="address">Malete Campus</p>
+  </div>
+
+</div>
+
+   <!-- NASARAWA STATE -->
+<section class="state-section">
+  <div class="header">
+    <h1>School Navigator</h1>
+    <p>Showing schools in Nasarawa State</p>
+  </div>
+
+  <div class="school-grid">
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Nasarawa State University</h2>
+        <span class="tag">Tertiary</span>
+      </div>
+      <p class="location">Keffi, Nasarawa State</p>
+      <p class="address">Keffi Campus</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Federal Polytechnic Nasarawa</h2>
+        <span class="tag">Tertiary</span>
+      </div>
+      <p class="location">Nasarawa, Nasarawa State</p>
+      <p class="address">P.M.B. 109, Nasarawa</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Government Secondary School, Lafia</h2>
+        <span class="tag">Secondary</span>
+      </div>
+      <p class="location">Lafia, Nasarawa State</p>
+      <p class="address">Lafia Central Road</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Keffi Community School</h2>
+        <span class="tag">Primary</span>
+      </div>
+      <p class="location">Keffi, Nasarawa State</p>
+      <p class="address">Keffi Old Road</p>
+    </div>
+  </div>
+</section>
+
+<!-- NIGER STATE -->
+<section class="state-section">
+  <div class="header">
+    <h1>School Navigator</h1>
+    <p>Showing schools in Niger State</p>
+  </div>
+
+  <div class="school-grid">
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Federal University of Technology, Minna</h2>
+        <span class="tag">Tertiary</span>
+      </div>
+      <p class="location">Minna, Niger State</p>
+      <p class="address">P.M.B. 65, Minna</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Ibrahim Badamasi Babangida University</h2>
+        <span class="tag">Tertiary</span>
+      </div>
+      <p class="location">Lapai, Niger State</p>
+      <p class="address">P.M.B. 11, Lapai</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Government Secondary School, Minna</h2>
+        <span class="tag">Secondary</span>
+      </div>
+      <p class="location">Minna, Niger State</p>
+      <p class="address">Bosso Road, Minna</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Bida Community School</h2>
+        <span class="tag">Primary</span>
+      </div>
+      <p class="location">Bida, Niger State</p>
+      <p class="address">Bida Central Road</p>
+    </div>
+  </div>
+</section>
+
+<!-- OGUN STATE -->
+<section class="state-section">
+  <div class="header">
+    <h1>School Navigator</h1>
+    <p>Showing schools in Ogun State</p>
+  </div>
+
+  <div class="school-grid">
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Federal University of Agriculture, Abeokuta</h2>
+        <span class="tag">Tertiary</span>
+      </div>
+      <p class="location">Abeokuta, Ogun State</p>
+      <p class="address">PMB 2240, Abeokuta</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Olabisi Onabanjo University</h2>
+        <span class="tag">Tertiary</span>
+      </div>
+      <p class="location">Ago-Iwoye, Ogun State</p>
+      <p class="address">PMB 2002, Ago-Iwoye</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Covenant University</h2>
+        <span class="tag">Tertiary</span>
+      </div>
+      <p class="location">Ota, Ogun State</p>
+      <p class="address">Canaan Land, Ota</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Moshood Abiola Polytechnic</h2>
+        <span class="tag">Tertiary</span>
+      </div>
+      <p class="location">Abeokuta, Ogun State</p>
+      <p class="address">Ojere, Abeokuta</p>
+    </div>
+  </div>
+</section>
+
+<!-- ONDO STATE -->
+<section class="state-section">
+  <div class="header">
+    <h1>School Navigator</h1>
+    <p>Showing schools in Ondo State</p>
+  </div>
+
+  <div class="school-grid">
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Federal University of Technology, Akure</h2>
+        <span class="tag">Tertiary</span>
+      </div>
+      <p class="location">Akure, Ondo State</p>
+      <p class="address">PMB 704, Akure</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Adekunle Ajasin University</h2>
+        <span class="tag">Tertiary</span>
+      </div>
+      <p class="location">Akungba-Akoko, Ondo State</p>
+      <p class="address">Akungba Campus</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Federal Polytechnic, Ile-Oluji</h2>
+        <span class="tag">Tertiary</span>
+      </div>
+      <p class="location">Ile-Oluji, Ondo State</p>
+      <p class="address">Ile-Oluji Campus</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Fiwasaye Girls Grammar School</h2>
+        <span class="tag">Secondary</span>
+      </div>
+      <p class="location">Akure, Ondo State</p>
+      <p class="address">Oba Adesida Road</p>
+    </div>
+  </div>
+</section>
+
+    <!-- ================= OSUN STATE ================= -->
+<section class="state-section">
+  <h2>Osun State</h2>
+
+  <div class="school-grid">
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Obafemi Awolowo University</h2>
+        <span class="tag">Tertiary</span>
+      </div>
+      <p class="location">Ile-Ife, Osun State</p>
+      <p class="address">PMB 13, Ile-Ife</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Osun State University</h2>
+        <span class="tag">Tertiary</span>
+      </div>
+      <p class="location">Osogbo, Osun State</p>
+      <p class="address">Main Campus, Osogbo</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Government Technical College, Osogbo</h2>
+        <span class="tag">Secondary</span>
+      </div>
+      <p class="location">Osogbo, Osun State</p>
+      <p class="address">Osogbo Road</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Ilesa Grammar School</h2>
+        <span class="tag">Secondary</span>
+      </div>
+      <p class="location">Ilesa, Osun State</p>
+      <p class="address">Ilesa Central</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Ede Community School</h2>
+        <span class="tag">Primary</span>
+      </div>
+      <p class="location">Ede, Osun State</p>
+      <p class="address">Ede Town</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Iwo Secondary School</h2>
+        <span class="tag">Secondary</span>
+      </div>
+      <p class="location">Iwo, Osun State</p>
+      <p class="address">Iwo Central</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">OAU Staff School</h2>
+        <span class="tag">Primary</span>
+      </div>
+      <p class="location">Ile-Ife, Osun State</p>
+      <p class="address">Campus Area</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Ejigbo Grammar School</h2>
+        <span class="tag">Secondary</span>
+      </div>
+      <p class="location">Ejigbo, Osun State</p>
+      <p class="address">Ejigbo Town</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Osogbo High School</h2>
+        <span class="tag">Secondary</span>
+      </div>
+      <p class="location">Osogbo, Osun State</p>
+      <p class="address">Ataoja Area</p>
+    </div>
+
+    <div class="school-card">
+      <div class="card-header">
+        <h2 class="school-name">Ikirun Community School</h2>
+        <span class="tag">Primary</span>
+      </div>
+      <p class="location">Ikirun, Osun State</p>
+      <p class="address">Ikirun Road</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= OYO STATE ================= -->
+<section class="state-section">
+  <h2>Oyo State</h2>
+
+  <div class="school-grid">
+
+    <div class="school-card">
+      <h2 class="school-name">University of Ibadan</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Ibadan, Oyo State</p>
+      <p class="address">UI Main Campus</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Ladoke Akintola University of Technology</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Ogbomosho, Oyo State</p>
+      <p class="address">PMB 4000, Ogbomosho</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Government College Ibadan</h2>
+      <span class="tag">Secondary</span>
+      <p class="location">Ibadan, Oyo State</p>
+      <p class="address">Bodija Road</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Ibadan Grammar School</h2>
+      <span class="tag">Secondary</span>
+      <p class="location">Ibadan, Oyo State</p>
+      <p class="address">Beere Road</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Saint Anne’s School</h2>
+      <span class="tag">Secondary</span>
+      <p class="location">Ibadan, Oyo State</p>
+      <p class="address">Mokola</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= PLATEAU STATE ================= -->
+<section class="state-section">
+  <h2>Plateau State</h2>
+
+  <div class="school-grid">
+
+    <div class="school-card">
+      <h2 class="school-name">University of Jos</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Jos, Plateau State</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Plateau State University</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Bokkos, Plateau State</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Government Secondary School, Jos</h2>
+      <span class="tag">Secondary</span>
+      <p class="location">Jos, Plateau State</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= RIVERS STATE ================= -->
+<section class="state-section">
+  <h2>Rivers State</h2>
+
+  <div class="school-grid">
+
+    <div class="school-card">
+      <h2 class="school-name">University of Port Harcourt</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Port Harcourt, Rivers State</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Rivers State University</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Port Harcourt, Rivers State</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Ignatius Ajuru University of Education</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Port Harcourt, Rivers State</p>
+    </div>
+
+  </div>
+</section>
+
+   <!-- ================= SOKOTO STATE ================= -->
+<section class="state-section">
+  <h2>Sokoto State</h2>
+
+  <div class="school-grid">
+
+    <div class="school-card">
+      <h2 class="school-name">Usmanu Danfodiyo University</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Sokoto, Sokoto State</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Sokoto State University</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Sokoto, Sokoto State</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Shehu Shagari College of Education</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Sokoto, Sokoto State</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Sultan Bello Secondary School</h2>
+      <span class="tag">Secondary</span>
+      <p class="location">Sokoto, Sokoto State</p>
+    </div>
+
+  </div>
+</section>
+    
+<!-- ================= TARABA STATE ================= -->
+<section class="state-section">
+  <h2>Taraba State</h2>
+
+  <div class="school-grid">
+
+    <div class="school-card">
+      <h2 class="school-name">Taraba State University</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Jalingo, Taraba State</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Federal University Wukari</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Wukari, Taraba State</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">College of Education Zing</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Zing, Taraba State</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Government Secondary School Jalingo</h2>
+      <span class="tag">Secondary</span>
+      <p class="location">Jalingo, Taraba State</p>
+    </div>
+
+  </div>
+</section>
+    
+<!-- ================= YOBE STATE ================= -->
+<section class="state-section">
+  <h2>Yobe State</h2>
+
+  <div class="school-grid">
+
+    <div class="school-card">
+      <h2 class="school-name">Federal University Gashua</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Gashua, Yobe State</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Yobe State University</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Damaturu, Yobe State</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Mai Idris Alooma Polytechnic</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Geidam, Yobe State</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Government Girls College Damaturu</h2>
+      <span class="tag">Secondary</span>
+      <p class="location">Damaturu, Yobe State</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= ZAMFARA STATE ================= -->
+<section class="state-section">
+  <h2>Zamfara State</h2>
+
+  <div class="school-grid">
+
+    <div class="school-card">
+      <h2 class="school-name">Federal University Gusau</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Gusau, Zamfara State</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Zamfara State University</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Talata Mafara, Zamfara State</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Federal College of Education (Technical), Gusau</h2>
+      <span class="tag">Tertiary</span>
+      <p class="location">Gusau, Zamfara State</p>
+    </div>
+
+    <div class="school-card">
+      <h2 class="school-name">Government Girls Secondary School Gusau</h2>
+      <span class="tag">Secondary</span>
+      <p class="location">Gusau, Zamfara State</p>
+    </div>
+
+  </div>
+</section>
 
 </body>
 </html>
