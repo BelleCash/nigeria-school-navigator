@@ -49,6 +49,21 @@ Each week's progress is organized into its own folder. Start with /Phase-1-Web-F
 **WORK PROGRESS**
 https://bellecash.github.io/nigeria-school-navigator/Phase-1-Web-Foundations/index.html
 
+## 🏗️ Technical Architecture: Day 3 Update
+
+### Typography & Readability
+* **Font Integration:** Integrated 'Inter' via Google Fonts to improve legibility and provide a modern, high-end aesthetic.
+* **Readability Optimization:** Implemented specific `line-height` (1.6) and `letter-spacing` (-0.02em) to ensure the UI remains accessible and easy to scan for mobile users in high-glare environments.
+
+### Flexbox Implementation
+* **Micro-Layouts:** Used `display: flex` with `justify-content: space-between` within school cards to create a clean horizontal alignment between School Names and Category Tags.
+* **Alignment Logic:** Utilized `align-items: center` to ensure text elements of different sizes remain perfectly centered relative to each other, maintaining a professional visual balance.
+
+### Latest Web Standards
+* **CSS Variables:** Leveraged `:root` variables for theme consistency across the platform.
+* **Hover States:** Added subtle CSS transitions to provide immediate interactive feedback to users.
+
+
 Development (Coming in Week 3)
 Once the React framework is initialized:
 npm install
