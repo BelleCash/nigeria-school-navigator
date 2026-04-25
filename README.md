@@ -63,6 +63,12 @@ https://bellecash.github.io/nigeria-school-navigator/Phase-1-Web-Foundations/ind
 * **CSS Variables:** Leveraged `:root` variables for theme consistency across the platform.
 * **Hover States:** Added subtle CSS transitions to provide immediate interactive feedback to users.
 
+## 🏗️ Day 4: Interactive Foundations
+Today, I transitioned the project from a static list to an interactive tool by:
+- **HTML Forms**: Added a search bar and state-filter dropdown to capture user input.
+- **UI Feedback**: Implemented CSS pseudo-classes (:hover, :focus) to improve mobile UX.
+- **Strategic Prep**: These forms are currently "static," serving as the hooks for the JavaScript filtering logic coming in Week 2.
+
 
 Development (Coming in Week 3)
 Once the React framework is initialized:
