@@ -69,6 +69,15 @@ Today, I transitioned the project from a static list to an interactive tool by:
 - **UI Feedback**: Implemented CSS pseudo-classes (:hover, :focus) to improve mobile UX.
 - **Strategic Prep**: These forms are currently "static," serving as the hooks for the JavaScript filtering logic coming in Week 2.
 
+### Day 5: Advanced Selectors & Accessible Design
+
+**Objective:** To transition from basic HTML structures to a professional, clean-coded architecture using external styling and accessibility standards.
+
+**Technical Progress:**
+* **External Modular Styling:** Decoupled CSS from HTML by creating a dedicated `style.css` file, improving maintainability.
+* **Advanced Attribute Selectors:** Used selectors like `input[type="radio"]` and `input[type="checkbox"]` to style specific elements without adding unnecessary classes to the HTML.
+* **A11y (Accessibility) Integration:** Implemented the `<label for="">` pattern across all form inputs to ensure screen-reader compatibility and increase clickable touch targets for mobile users.
+* **Form Logic:** Built complex input groups using `<fieldset>` and `<legend>` for better semantic grouping of school data.
 
 Development (Coming in Week 3)
 Once the React framework is initialized:
