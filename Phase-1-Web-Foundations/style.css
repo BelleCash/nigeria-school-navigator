@@ -40,7 +40,7 @@ body {
   margin: 0 auto;
 }
 
-/* ACCESSIBILITY FOCUS */
+/* ACCESSIBILITY */
 :focus-visible {
   outline: 3px solid rgba(0, 135, 81, 0.4);
   outline-offset: 2px;
@@ -63,14 +63,16 @@ h1 {
   color: var(--text-gray);
 }
 
-/* SEARCH SECTION */
+/* FORM LAYOUT */
 .search-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
   margin-top: 15px;
+  align-items: flex-start;
 }
 
+/* INPUTS */
 .search-input,
 .state-filter,
 .search-btn {
@@ -79,7 +81,7 @@ h1 {
   font-size: 0.95rem;
 }
 
-/* INPUT */
+/* SEARCH INPUT */
 .search-input {
   flex: 1;
   min-width: 180px;
@@ -89,17 +91,18 @@ h1 {
 }
 
 .search-input:focus {
-  outline: none;
   border-color: var(--nigerian-green);
   box-shadow: 0 0 0 3px rgba(0, 135, 81, 0.2);
+  outline: none;
 }
 
-/* SELECT */
+/* STATE SELECT */
 .state-filter {
   border: 2px solid var(--border);
   background: var(--card-bg);
   color: var(--text-dark);
   cursor: pointer;
+  min-width: 160px;
 }
 
 /* BUTTON */
@@ -117,6 +120,50 @@ h1 {
     background: var(--nigerian-green-dark);
     transform: translateY(-2px);
   }
+}
+
+/* FIELDSETS (RADIO + CHECKBOX GROUPS) */
+fieldset {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 200px;
+}
+
+legend {
+  font-weight: 700;
+  color: var(--nigerian-green);
+  padding: 0 8px;
+}
+
+/* LABELS (RADIO + CHECKBOX UNIFIED) */
+fieldset label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  transition: 0.2s ease;
+}
+
+fieldset label:hover {
+  border-color: var(--nigerian-green);
+  background: rgba(0, 135, 81, 0.05);
+}
+
+/* INPUTS (RADIO + CHECKBOX) */
+input[type="radio"],
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--nigerian-green);
+  cursor: pointer;
 }
 
 /* GRID */
@@ -181,34 +228,6 @@ h1 {
   margin-top: 4px;
 }
 
-/* FIELDSET */
-fieldset {
-  border: 1px solid var(--nigerian-green);
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 20px;
-}
-
-legend {
-  font-weight: bold;
-  color: var(--nigerian-green);
-  padding: 0 10px;
-}
-
-/* RADIO BUTTONS */
-input[type="radio"] {
-  margin-right: 8px;
-  cursor: pointer;
-}
-
-fieldset label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-right: 20px;
-  cursor: pointer;
-}
-
 /* MOBILE */
 @media (max-width: 600px) {
   .search-container {
@@ -217,7 +236,8 @@ fieldset label {
 
   .search-input,
   .state-filter,
-  .search-btn {
+  .search-btn,
+  fieldset {
     width: 100%;
   }
 
