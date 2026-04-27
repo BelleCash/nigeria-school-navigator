@@ -19,64 +19,107 @@
   <div class="container">
 
     <!-- MAIN HEADER -->
-<header class="header">
-  <h1>School Navigator</h1>
-  <p>Find schools in Nigeria by name or state</p>
+    <header class="header">
+      <h1>School Navigator</h1>
+      <p>Find schools in Nigeria by name or state</p>
 
-  <form class="search-container">
-    <label for="school-search" class="visually-hidden">Search by school name</label>
-    <input 
-      type="text" 
-      id="school-search"
-      name="school"
-      placeholder="Search by school name..." 
-      class="search-input">
+      <form class="search-container">
 
-    <label for="state-filter" class="visually-hidden">Filter by state</label>
-    <select id="state-filter" name="state" class="state-filter">
-      <option value="">All States</option>
-      <option value="abia">Abia</option>
-      <option value="adamawa">Adamawa</option>
-      <option value="akwa-ibom">Akwa Ibom</option>
-      <option value="anambra">Anambra</option>
-      <option value="bauchi">Bauchi</option>
-      <option value="bayelsa">Bayelsa</option>
-      <option value="benue">Benue</option>
-      <option value="borno">Borno</option>
-      <option value="cross-river">Cross River</option>
-      <option value="delta">Delta</option>
-      <option value="ebonyi">Ebonyi</option>
-      <option value="edo">Edo</option>
-      <option value="ekiti">Ekiti</option>
-      <option value="enugu">Enugu</option>
-      <option value="gombe">Gombe</option>
-      <option value="imo">Imo</option>
-      <option value="jigawa">Jigawa</option>
-      <option value="kaduna">Kaduna</option>
-      <option value="kano">Kano</option>
-      <option value="katsina">Katsina</option>
-      <option value="kebbi">Kebbi</option>
-      <option value="kogi">Kogi</option>
-      <option value="kwara">Kwara</option>
-      <option value="lagos">Lagos</option>
-      <option value="nasarawa">Nasarawa</option>
-      <option value="niger">Niger</option>
-      <option value="ogun">Ogun</option>
-      <option value="ondo">Ondo</option>
-      <option value="osun">Osun</option>
-      <option value="oyo">Oyo</option>
-      <option value="plateau">Plateau</option>
-      <option value="rivers">Rivers</option>
-      <option value="sokoto">Sokoto</option>
-      <option value="taraba">Taraba</option>
-      <option value="yobe">Yobe</option>
-      <option value="zamfara">Zamfara</option>
-      <option value="fct">Abuja (FCT)</option>
-    </select>
+        <!-- SEARCH -->
+        <label for="school-search" class="visually-hidden">Search by school name</label>
+        <input 
+          type="text" 
+          id="school-search"
+          name="school"
+          placeholder="Search by school name..." 
+          class="search-input">
 
-    <button type="submit" class="search-btn">Find Schools</button>
-  </form>
-</header>
+        <!-- STATE FILTER -->
+        <label for="state-filter" class="visually-hidden">Filter by state</label>
+        <select id="state-filter" name="state" class="state-filter">
+          <option value="">All States</option>
+          <option value="abia">Abia</option>
+          <option value="adamawa">Adamawa</option>
+          <option value="akwa-ibom">Akwa Ibom</option>
+          <option value="anambra">Anambra</option>
+          <option value="bauchi">Bauchi</option>
+          <option value="bayelsa">Bayelsa</option>
+          <option value="benue">Benue</option>
+          <option value="borno">Borno</option>
+          <option value="cross-river">Cross River</option>
+          <option value="delta">Delta</option>
+          <option value="ebonyi">Ebonyi</option>
+          <option value="edo">Edo</option>
+          <option value="ekiti">Ekiti</option>
+          <option value="enugu">Enugu</option>
+          <option value="gombe">Gombe</option>
+          <option value="imo">Imo</option>
+          <option value="jigawa">Jigawa</option>
+          <option value="kaduna">Kaduna</option>
+          <option value="kano">Kano</option>
+          <option value="katsina">Katsina</option>
+          <option value="kebbi">Kebbi</option>
+          <option value="kogi">Kogi</option>
+          <option value="kwara">Kwara</option>
+          <option value="lagos">Lagos</option>
+          <option value="nasarawa">Nasarawa</option>
+          <option value="niger">Niger</option>
+          <option value="ogun">Ogun</option>
+          <option value="ondo">Ondo</option>
+          <option value="osun">Osun</option>
+          <option value="oyo">Oyo</option>
+          <option value="plateau">Plateau</option>
+          <option value="rivers">Rivers</option>
+          <option value="sokoto">Sokoto</option>
+          <option value="taraba">Taraba</option>
+          <option value="yobe">Yobe</option>
+          <option value="zamfara">Zamfara</option>
+          <option value="fct">Abuja (FCT)</option>
+        </select>
+
+        <!-- SCHOOL TYPE (RADIO BUTTONS) -->
+        <fieldset>
+          <legend>School Type</legend>
+
+          <label>
+            <input type="radio" name="school-type" value="public">
+            Public
+          </label>
+
+          <label>
+            <input type="radio" name="school-type" value="private">
+            Private
+          </label>
+        </fieldset>
+
+        <!-- FACILITIES (CHECKBOXES) -->
+        <fieldset>
+          <legend>Available Facilities</legend>
+
+          <label>
+            <input type="checkbox" name="facilities" value="library">
+            Library
+          </label>
+
+          <label>
+            <input type="checkbox" name="facilities" value="lab">
+            Science Lab
+          </label>
+
+          <label>
+            <input type="checkbox" name="facilities" value="sports">
+            Sports Complex
+          </label>
+
+        </fieldset>
+
+        <!-- SUBMIT BUTTON -->
+        <button type="submit" class="search-btn">
+          Find Schools
+        </button>
+
+      </form>
+    </header>
 
   </div>
 
