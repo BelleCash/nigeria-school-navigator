@@ -1,1 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>School Navigator | Phase 2</title>
 
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css"/>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- HEADER -->
+    <header class="header">
+      <h1>School Navigator</h1>
+      <p>Search and filter schools across Nigeria</p>
+
+      <!-- SEARCH + FILTER FORM -->
+      <form id="searchForm" class="search-container">
+
+        <!-- SEARCH INPUT -->
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="Search school name..."
+        />
+
+        <!-- STATE FILTER -->
+        <select id="stateFilter" class="state-filter">
+          <option value="">All States</option>
+          <option value="abia">Abia</option>
+          <option value="adamawa">Adamawa</option>
+          <option value="akwa-ibom">Akwa Ibom</option>
+          <option value="anambra">Anambra</option>
+          <option value="bauchi">Bauchi</option>
+          <option value="bayelsa">Bayelsa</option>
+          <option value="benue">Benue</option>
+          <option value="borno">Borno</option>
+          <option value="cross-river">Cross River</option>
+          <option value="delta">Delta</option>
+          <option value="ebonyi">Ebonyi</option>
+          <option value="edo">Edo</option>
+          <option value="ekiti">Ekiti</option>
+          <option value="enugu">Enugu</option>
+          <option value="fct">FCT (Abuja)</option>
+          <option value="gombe">Gombe</option>
+          <option value="imo">Imo</option>
+          <option value="jigawa">Jigawa</option>
+          <option value="kaduna">Kaduna</option>
+          <option value="kano">Kano</option>
+          <option value="katsina">Katsina</option>
+          <option value="kebbi">Kebbi</option>
+          <option value="kogi">Kogi</option>
+          <option value="kwara">Kwara</option>
+          <option value="lagos">Lagos</option>
+          <option value="nasarawa">Nasarawa</option>
+          <option value="niger">Niger</option>
+          <option value="ogun">Ogun</option>
+          <option value="ondo">Ondo</option>
+          <option value="osun">Osun</option>
+          <option value="oyo">Oyo</option>
+          <option value="plateau">Plateau</option>
+          <option value="rivers">Rivers</option>
+          <option value="sokoto">Sokoto</option>
+          <option value="taraba">Taraba</option>
+          <option value="yobe">Yobe</option>
+          <option value="zamfara">Zamfara</option>
+        </select>
+
+        <!-- SCHOOL TYPE -->
+        <select id="typeFilter" class="state-filter">
+          <option value="">All Types</option>
+          <option value="primary">Primary</option>
+          <option value="secondary">Secondary</option>
+          <option value="tertiary">Tertiary</option>
+        </select>
+
+        <button type="submit" class="search-btn">
+          Search
+        </button>
+
+      </form>
+    </header>
+
+    <!-- RESULTS SECTION -->
+    <main>
+
+      <h2 class="section-title">Results</h2>
+
+      <!-- THIS IS WHERE JS WILL RENDER SCHOOLS -->
+      <div id="resultsGrid" class="school-grid">
+        <!-- Dynamic cards inserted here -->
+      </div>
+
+      <!-- EMPTY STATE -->
+      <p id="emptyState" class="empty-state hidden">
+        No schools found. Try adjusting your filters.
+      </p>
+
+    </main>
+
+  </div>
+
+  <!-- DATA + LOGIC -->
+  <script src="src/data/nigeriaData.js"></script>
+  <script src="src/logic/filter.js"></script>
+  <script src="src/script.js"></script>
+
+</body>
+</html>
