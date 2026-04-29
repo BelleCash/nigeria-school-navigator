@@ -96,10 +96,8 @@
 
       <h2 class="section-title">Results</h2>
 
-      <!-- THIS IS WHERE JS WILL RENDER SCHOOLS -->
-      <div id="resultsGrid" class="school-grid">
-        <!-- Dynamic cards inserted here -->
-      </div>
+      <!-- RESULTS GRID -->
+      <div id="resultsGrid" class="school-grid"></div>
 
       <!-- EMPTY STATE -->
       <p id="emptyState" class="empty-state hidden">
@@ -110,10 +108,8 @@
 
   </div>
 
-  <!-- DATA + LOGIC -->
-  <script src="src/data/nigeriaData.js"></script>
-  <script src="src/logic/filter.js"></script>
-  <script src="src/script.js"></script>
+  <!-- ✅ ONLY ONE SCRIPT (MODULE) -->
+  <script type="module" src="src/script.js"></script>
 
 </body>
 </html>
