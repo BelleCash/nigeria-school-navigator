@@ -16,26 +16,32 @@
 
 <body>
 
-  <div class="container">
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="logo">
+      <img src="assets/images/inamatrix-logo.png" alt="Inamatrix Logo">
+      <span>School Navigator</span>
+    </div>
+  </nav>
 
-    <!-- HEADER -->
-    <header class="header">
-      <h1>School Navigator</h1>
-      <p>Search and filter schools across Nigeria</p>
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Find the Best Schools in Nigeria</h1>
+      <p>Search, filter and explore schools across all states.</p>
 
-      <!-- SEARCH + FILTER FORM -->
+      <!-- SEARCH FORM -->
       <form id="searchForm" class="search-container">
 
         <!-- SEARCH INPUT -->
         <input
           type="text"
           id="searchInput"
-          class="search-input"
           placeholder="Search school name..."
         />
 
         <!-- STATE FILTER -->
-        <select id="stateFilter" class="state-filter">
+        <select id="stateFilter">
           <option value="">All States</option>
           <option value="abia">Abia</option>
           <option value="adamawa">Adamawa</option>
@@ -77,38 +83,39 @@
         </select>
 
         <!-- SCHOOL TYPE -->
-        <select id="typeFilter" class="state-filter">
+        <select id="typeFilter">
           <option value="">All Types</option>
           <option value="primary">Primary</option>
           <option value="secondary">Secondary</option>
           <option value="tertiary">Tertiary</option>
         </select>
 
-        <button type="submit" class="search-btn">
-          Search
-        </button>
+        <!-- BUTTON -->
+        <button type="submit">Search</button>
 
       </form>
-    </header>
+    </div>
+  </section>
 
-    <!-- RESULTS SECTION -->
-    <main>
+  <!-- RESULTS SECTION -->
+  <main class="results-section">
 
-      <h2 class="section-title">Results</h2>
+    <div class="results-header">
+      <h2>Results</h2>
+      <span id="resultCount"></span>
+    </div>
 
-      <!-- RESULTS GRID -->
-      <div id="resultsGrid" class="school-grid"></div>
+    <!-- RESULTS GRID -->
+    <div id="resultsGrid" class="school-grid"></div>
 
-      <!-- EMPTY STATE -->
-      <p id="emptyState" class="empty-state hidden">
-        No schools found. Try adjusting your filters.
-      </p>
+    <!-- EMPTY STATE -->
+    <p id="emptyState" class="empty-state hidden">
+      No schools found. Try adjusting your filters.
+    </p>
 
-    </main>
+  </main>
 
-  </div>
-
-  <!-- ✅ ONLY ONE SCRIPT (MODULE) -->
+  <!-- SCRIPT -->
   <script type="module" src="src/script.js"></script>
 
 </body>
