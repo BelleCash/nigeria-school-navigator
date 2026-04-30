@@ -1,8 +1,10 @@
+// =========================
+// SUPABASE INIT (FIXED)
+// =========================
 const supabaseUrl = "https://rjqrdgdcnotxrwpvhxzp.supabase.co"
 const supabaseKey = "sb_publishable_gA0zVRQ7iYAWekG3BDrDiQ_uBcDYRe7"
 
-// ✅ FIXED INIT
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey)
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
 
 // =========================
 // DOM
@@ -14,40 +16,74 @@ const typeFilter = document.querySelector("#typeFilter")
 const resultCount = document.querySelector("#resultCount")
 const emptyState = document.querySelector("#emptyState")
 
+// =========================
+// STATE
+// =========================
 let page = 0
 const limit = 20
 let loading = false
 
 // =========================
-// FORMAT LOCATION
+// SAFE HELPERS
 // =========================
+function safe(value, fallback = "Unknown") {
+  return value?.toString().trim() || fallback
+}
+
+function normalizeOwnership(value) {
+  if (!value) return "Unknown"
+
+  if (typeof value === "string") {
+    return value.trim() || "Unknown"
+  }
+
+  if (typeof value === "object") {
+    return (
+      value.type ||
+      value.category ||
+      value.name ||
+      "Unknown"
+    )
+  }
+
+  return "Unknown"
+}
+
+function getEducationLevel(levels = {}) {
+  if (levels.primary === true) return "Primary"
+  if (levels.secondary === true) return "Secondary"
+  if (levels.tertiary === true) return "Tertiary"
+  return "Unknown"
+}
+
 function formatLocation(school) {
-  const lga = school.lga
-  const state = school.state
+  const lga = school.lga?.trim()
+  const state = school.state?.trim()
 
   if (lga && state) return `${lga}, ${state}`
   if (state) return state
   if (lga) return lga
+
   return "Location not available"
 }
 
 // =========================
-// NORMALIZE
+// NORMALIZE (CRITICAL FIX)
 // =========================
 function normalize(s) {
   return {
-    school_name: s.school_name || "No name",
-    state: s.state || null,
-    lga: s.lga || null,
-    address: s.address || "",
-    delivery_mode: s.delivery_mode || "Unknown",
-    ownership: s.ownership?.type || s.ownership || "Unknown",
+    school_name: safe(s.school_name, "No name"),
+    state: safe(s.state, ""),
+    lga: safe(s.lga, ""),
+    address: safe(s.address, ""),
+    delivery_mode: safe(s.delivery_mode),
+    ownership: normalizeOwnership(s.ownership),
     education_levels: s.education_levels || {}
   }
 }
 
 // =========================
-// FETCH
+// FETCH DATA
 // =========================
 async function fetchSchools(reset = false) {
   if (loading) return
@@ -59,7 +95,7 @@ async function fetchSchools(reset = false) {
     emptyState.classList.add("hidden")
   }
 
-  let query = supabaseClient
+  let query = supabase
     .from("nigeria_data")
     .select("*")
     .range(page * limit, (page + 1) * limit - 1)
@@ -87,7 +123,7 @@ async function fetchSchools(reset = false) {
     return
   }
 
-  if (!data || data.length === 0) {
+  if (!data?.length) {
     if (page === 0) showEmptyState()
     return
   }
@@ -104,18 +140,13 @@ function render(schools) {
 
   resultCount.textContent = `${grid.children.length + schools.length} schools`
 
-  schools.forEach(s => {
+  schools.forEach((s) => {
     const card = document.createElement("div")
     card.className = "school-card"
 
-    const level =
-      s.education_levels?.primary
-        ? "Primary"
-        : s.education_levels?.secondary
-        ? "Secondary"
-        : s.education_levels?.tertiary
-        ? "Tertiary"
-        : "Unknown"
+    const level = getEducationLevel(s.education_levels)
+
+    const location = formatLocation(s)
 
     card.innerHTML = `
       <div class="card-header">
@@ -124,7 +155,8 @@ function render(schools) {
       </div>
 
       <div class="card-body">
-        <p><strong>Location:</strong> 📍 ${formatLocation(s)}</p>
+        <p><strong>Location:</strong> 📍 ${location}</p>
+
         ${s.address ? `<p>${s.address}</p>` : ""}
 
         <div class="meta-info">
