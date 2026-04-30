@@ -1,24 +1,26 @@
 // =========================
-// SUPABASE INIT
+// SUPABASE INIT (FIXED)
 // =========================
 const supabaseUrl = "https://rjqrdgdcnotxrwpvhxzp.supabase.co"
-const supabaseKey = "sb_publishable_gA0zVRQ7iYAWekG3BDrDiQ_uBcDYRe7"
 
-let supabase
+const supabaseKey =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqcXJkZ2Rjbm90eHJ3cHZoeHpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjkxMzgsImV4cCI6MjA5MzA0NTEzOH0.hbVnC_GVOPZlFbnqCwOk_iPHa5UkcOYH5ZLfY0D_kvw";
+
+let supabase;
 
 // =========================
-// DOM READY
+// INIT
 // =========================
 document.addEventListener("DOMContentLoaded", () => {
   if (!window.supabase) {
-    console.error("Supabase CDN not loaded")
-    return
+    console.error("Supabase CDN not loaded");
+    return;
   }
 
-  supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+  supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-  init()
-})
+  init();
+});
 
 // =========================
 // DOM ELEMENTS
