@@ -1,33 +1,43 @@
-// src/logic/filter.js
-
-/**
- * Filters the school dataset based on user-selected criteria.
- * Using a "truthy" check for each filter ensures that empty 
- * inputs (like "All States") don't block the results.
- */
 export function filterSchools(data, { state, level, ownership, query }) {
   return data.filter((school) => {
-    // 1. Normalize and compare State (e.g., "lagos" vs "Lagos")
-    const matchState = state 
-      ? school.state.toLowerCase() === state.toLowerCase() 
-      : true;
+    const schoolState = school.state?.toLowerCase() || ""
+    const schoolName = school.school_name?.toLowerCase() || ""
 
-    // 2. Normalize and compare Education Level
-    const matchLevel = level 
-      ? school.education_level.toLowerCase() === level.toLowerCase() 
-      : true;
+    // Handle education_levels safely
+    const schoolLevel =
+      school.education_levels?.primary
+        ? "primary"
+        : school.education_levels?.secondary
+        ? "secondary"
+        : school.education_levels?.tertiary
+        ? "tertiary"
+        : ""
 
-    // 3. Compare Ownership (Public/Private)
-    const matchOwnership = ownership 
-      ? school.ownership_type.toLowerCase() === ownership.toLowerCase() 
-      : true;
+    // Handle ownership safely (string OR object)
+    const schoolOwnership =
+      (school.ownership?.type || school.ownership || "")
+        .toLowerCase()
 
-    // 4. Fuzzy Search for School Name
+    // STATE FILTER
+    const matchState = state
+      ? schoolState === state.toLowerCase()
+      : true
+
+    // LEVEL FILTER
+    const matchLevel = level
+      ? schoolLevel === level.toLowerCase()
+      : true
+
+    // OWNERSHIP FILTER
+    const matchOwnership = ownership
+      ? schoolOwnership === ownership.toLowerCase()
+      : true
+
+    // SEARCH FILTER
     const matchQuery = query
-      ? school.school_name.toLowerCase().includes(query.toLowerCase())
-      : true;
+      ? schoolName.includes(query.toLowerCase())
+      : true
 
-    // All conditions must be true for the school to stay in the array
-    return matchState && matchLevel && matchOwnership && matchQuery;
-  });
+    return matchState && matchLevel && matchOwnership && matchQuery
+  })
 }
