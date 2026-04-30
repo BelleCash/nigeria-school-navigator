@@ -1,7 +1,8 @@
 const supabaseUrl = "https://rjqrdgdcnotxrwpvhxzp.supabase.co"
 const supabaseKey = "sb_publishable_gA0zVRQ7iYAWekG3BDrDiQ_uBcDYRe7"
 
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+// ✅ FIXED INIT
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey)
 
 // =========================
 // DOM
@@ -18,7 +19,7 @@ const limit = 20
 let loading = false
 
 // =========================
-// FORMAT LOCATION (SAFE)
+// FORMAT LOCATION
 // =========================
 function formatLocation(school) {
   const lga = school.lga
@@ -31,7 +32,7 @@ function formatLocation(school) {
 }
 
 // =========================
-// NORMALIZE (CRITICAL FIX)
+// NORMALIZE
 // =========================
 function normalize(s) {
   return {
@@ -46,7 +47,7 @@ function normalize(s) {
 }
 
 // =========================
-// FETCH DATA
+// FETCH
 // =========================
 async function fetchSchools(reset = false) {
   if (loading) return
@@ -58,7 +59,7 @@ async function fetchSchools(reset = false) {
     emptyState.classList.add("hidden")
   }
 
-  let query = supabase
+  let query = supabaseClient
     .from("nigeria_data")
     .select("*")
     .range(page * limit, (page + 1) * limit - 1)
@@ -86,16 +87,12 @@ async function fetchSchools(reset = false) {
     return
   }
 
-  // 🚨 FIX: handle empty safely
   if (!data || data.length === 0) {
-    if (page === 0) {
-      showEmptyState()
-    }
+    if (page === 0) showEmptyState()
     return
   }
 
   render(data.map(normalize))
-
   page++
 }
 
