@@ -15,7 +15,7 @@ const emptyState = document.querySelector("#emptyState")
 const resultCount = document.querySelector("#resultCount")
 
 // =========================
-// STATE MANAGEMENT
+// STATE
 // =========================
 let page = 0
 const limit = 20
@@ -24,11 +24,23 @@ let hasMore = true
 let debounceTimer = null
 
 // =========================
-// LOCATION FORMATTER (FIXED CORE BUG)
+// 🔥 NORMALIZE DATA (FIXES YOUR BUG)
+// =========================
+function normalizeSchool(school) {
+  return {
+    ...school,
+    state: school.state?.trim() || "",
+    lga: school.lga?.trim() || "",
+    ownership: school.ownership?.type || school.ownership || "Unknown"
+  }
+}
+
+// =========================
+// LOCATION FORMATTER (SAFE)
 // =========================
 function formatLocation(school) {
-  const lga = school.lga?.trim()
-  const state = school.state?.trim()
+  const lga = school.lga
+  const state = school.state
 
   if (lga && state) return `${lga}, ${state}`
   if (state) return state
@@ -38,7 +50,7 @@ function formatLocation(school) {
 }
 
 // =========================
-// LOADING UI
+// UI HELPERS
 // =========================
 function showLoading() {
   loading = true
@@ -50,7 +62,7 @@ function hideLoading() {
 }
 
 // =========================
-// DEBOUNCE FUNCTION
+// DEBOUNCE
 // =========================
 function debounce(fn, delay = 500) {
   return (...args) => {
@@ -60,7 +72,7 @@ function debounce(fn, delay = 500) {
 }
 
 // =========================
-// FETCH DATA (PAGINATION + FILTERS)
+// FETCH DATA
 // =========================
 async function fetchSchools(reset = false) {
   if (loading) return
@@ -83,17 +95,14 @@ async function fetchSchools(reset = false) {
     .select("*")
     .range(page * limit, (page + 1) * limit - 1)
 
-  // SEARCH FILTER
   if (searchInput.value.trim()) {
     query = query.ilike("school_name", `%${searchInput.value.trim()}%`)
   }
 
-  // STATE FILTER
   if (stateFilter.value) {
     query = query.eq("state", stateFilter.value)
   }
 
-  // LGA FILTER
   if (typeFilter.value) {
     query = query.eq("lga", typeFilter.value)
   }
@@ -103,16 +112,13 @@ async function fetchSchools(reset = false) {
   hideLoading()
 
   if (error) {
-    console.error("Supabase error:", error)
+    console.error(error)
     return
   }
 
   if (!data || data.length === 0) {
     hasMore = false
-
-    if (page === 0) {
-      showEmptyState()
-    }
+    if (page === 0) showEmptyState()
     return
   }
 
@@ -122,14 +128,16 @@ async function fetchSchools(reset = false) {
 }
 
 // =========================
-// RENDER FUNCTION
+// RENDER
 // =========================
 function renderSchools(schools) {
   emptyState.classList.add("hidden")
 
   resultCount.textContent = `${grid.children.length + schools.length} schools`
 
-  schools.forEach((school) => {
+  schools.forEach(rawSchool => {
+    const school = normalizeSchool(rawSchool)
+
     const card = document.createElement("div")
     card.className = "school-card"
 
@@ -141,11 +149,6 @@ function renderSchools(schools) {
         : school.education_levels?.tertiary
         ? "Tertiary"
         : "Unknown"
-
-    const ownership =
-      school.ownership?.type ||
-      school.ownership ||
-      "Unknown"
 
     card.innerHTML = `
       <div class="card-header">
@@ -160,7 +163,7 @@ function renderSchools(schools) {
 
         <div class="meta-info">
           <span>${school.delivery_mode || "Unknown"}</span>
-          <span>${ownership}</span>
+          <span>${school.ownership}</span>
         </div>
       </div>
     `
@@ -184,18 +187,15 @@ function showEmptyState() {
 }
 
 // =========================
-// DEBOUNCED SEARCH
+// EVENTS
 // =========================
 const debouncedSearch = debounce(() => fetchSchools(true), 600)
 
-// =========================
-// EVENTS
-// =========================
 searchInput.addEventListener("input", debouncedSearch)
 stateFilter.addEventListener("change", () => fetchSchools(true))
 typeFilter.addEventListener("change", () => fetchSchools(true))
 
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", e => {
   e.preventDefault()
   fetchSchools(true)
 })
@@ -212,6 +212,6 @@ window.addEventListener("scroll", () => {
 })
 
 // =========================
-// INITIAL LOAD
+// INIT
 // =========================
 fetchSchools()
