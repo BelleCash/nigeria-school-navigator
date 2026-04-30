@@ -1,8 +1,9 @@
+
 // =========================
 // SUPABASE INIT
 // =========================
 const SUPABASE_URL = "https://ulqsavnzjzvxqcihsmmv.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVscXNhdm56anp2eHFjaWhzbW12Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NTAwNTgsImV4cCI6MjA5MzEyNjA1OH0.hou0zP6NyY9F9ZlrZIh82_CanIrmzveFaea4aka4gtA";
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -22,7 +23,7 @@ const resultCount = document.getElementById("resultCount");
 const emptyState = document.getElementById("emptyState");
 
 // =========================
-// UTIL: DEBOUNCE (IMPORTANT FOR SCALE)
+// UTIL: DEBOUNCE
 // =========================
 function debounce(fn, delay = 300) {
   let timeout;
@@ -33,19 +34,23 @@ function debounce(fn, delay = 300) {
 }
 
 // =========================
-// LOAD STATES (CLEANED + UNIQUE)
+// LOAD STATES (FIXED: DISTINCT QUERY)
 // =========================
 async function loadStates() {
   const { data, error } = await client
     .from("schools")
     .select("state");
 
-  if (error || !data) {
-    console.error(error);
+  if (error) {
+    console.error("State load error:", error);
     return;
   }
 
-  const uniqueStates = [...new Set(data.map(s => s.state).filter(Boolean))];
+  if (!data) return;
+
+  const uniqueStates = [
+    ...new Set(data.map(s => s.state).filter(Boolean))
+  ].sort();
 
   stateFilter.innerHTML = `<option value="">All States</option>`;
 
@@ -58,7 +63,7 @@ async function loadStates() {
 }
 
 // =========================
-// LOAD LGAs BASED ON STATE
+// LOAD LGAs (SAFE VERSION)
 // =========================
 async function loadLGAs(state) {
   lgaFilter.innerHTML = `<option value="">All LGAs</option>`;
@@ -70,9 +75,16 @@ async function loadLGAs(state) {
     .select("lga")
     .eq("state", state);
 
-  if (error || !data) return;
+  if (error) {
+    console.error("LGA load error:", error);
+    return;
+  }
 
-  const uniqueLGAs = [...new Set(data.map(l => l.lga).filter(Boolean))];
+  if (!data) return;
+
+  const uniqueLGAs = [
+    ...new Set(data.map(l => l.lga).filter(Boolean))
+  ].sort();
 
   uniqueLGAs.forEach(lga => {
     const opt = document.createElement("option");
@@ -83,7 +95,7 @@ async function loadLGAs(state) {
 }
 
 // =========================
-// MAIN SEARCH FUNCTION
+// SEARCH FUNCTION (OPTIMIZED)
 // =========================
 async function searchSchools() {
 
@@ -92,7 +104,6 @@ async function searchSchools() {
     .select("*")
     .limit(50);
 
-  // safer search (works even if empty)
   const keyword = input.value?.trim();
 
   if (keyword) {
@@ -126,7 +137,7 @@ async function searchSchools() {
 }
 
 // =========================
-// RENDER RESULTS
+// RENDER RESULTS (SAFE + FAST)
 // =========================
 function renderResults(data) {
 
@@ -140,25 +151,28 @@ function renderResults(data) {
 
   emptyState.classList.add("hidden");
 
-  data.forEach(school => {
+  const fragment = document.createDocumentFragment();
 
+  data.forEach(school => {
     const card = document.createElement("div");
     card.className = "school-card";
 
     card.innerHTML = `
-      <h3>${school.name || "Unnamed School"}</h3>
-      <p>${school.state || ""} • ${school.lga || ""}</p>
-      <p><b>Level:</b> ${school.level || "N/A"}</p>
-      <p><b>Type:</b> ${school.settlement_type || "N/A"}</p>
-      <small>${(school.ai_tags || []).join(", ")}</small>
+      <h3>${school.name ?? "Unnamed School"}</h3>
+      <p>${school.state ?? ""} • ${school.lga ?? ""}</p>
+      <p><b>Level:</b> ${school.level ?? "N/A"}</p>
+      <p><b>Type:</b> ${school.settlement_type ?? "N/A"}</p>
+      <small>${Array.isArray(school.ai_tags) ? school.ai_tags.join(", ") : ""}</small>
     `;
 
-    resultsGrid.appendChild(card);
+    fragment.appendChild(card);
   });
+
+  resultsGrid.appendChild(fragment);
 }
 
 // =========================
-// EVENTS (OPTIMIZED)
+// EVENTS
 // =========================
 const debouncedSearch = debounce(searchSchools, 300);
 
