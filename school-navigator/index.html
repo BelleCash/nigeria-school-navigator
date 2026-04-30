@@ -7,12 +7,16 @@
 
   <link rel="stylesheet" href="style.css"/>
 
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <!-- Supabase JS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Optional favicon -->
+  <link rel="icon" href="assets/images/inamatrix-logo.png">
+
+  <!-- Supabase (MUST load before script.js) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 </head>
 
@@ -35,7 +39,12 @@
       <!-- SEARCH FORM -->
       <form id="searchForm" class="search-container">
 
-        <input type="text" id="searchInput" placeholder="Search school name..." />
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search school name..."
+          autocomplete="off"
+        />
 
         <select id="stateFilter">
           <option value="">All States</option>
@@ -73,6 +82,9 @@
       <span id="resultCount">0</span>
     </div>
 
+    <!-- optional loading hook -->
+    <div id="loadingState" class="hidden">Loading...</div>
+
     <div id="resultsGrid" class="school-grid"></div>
 
     <p id="emptyState" class="empty-state hidden">
@@ -81,7 +93,7 @@
 
   </main>
 
-  <!-- APP LOGIC -->
+  <!-- APP LOGIC (MUST be last) -->
   <script src="script.js"></script>
 
 </body>
