@@ -1,1 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>School Navigator | Nigeria</title>
 
+  <link rel="stylesheet" href="style.css"/>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="logo">
+      <span>🏫 School Navigator</span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+
+      <h1>Find Schools Across Nigeria</h1>
+      <p>Search 100,000+ schools instantly with smart filters</p>
+
+      <!-- SEARCH FORM -->
+      <form id="searchForm" class="search-container">
+
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search school name..."
+        />
+
+        <select id="stateFilter">
+          <option value="">All States</option>
+        </select>
+
+        <select id="lgaFilter">
+          <option value="">All LGAs</option>
+        </select>
+
+        <select id="typeFilter">
+          <option value="">All Levels</option>
+          <option value="primary">Primary</option>
+          <option value="secondary">Secondary</option>
+          <option value="tertiary">Tertiary</option>
+        </select>
+
+        <select id="settlementFilter">
+          <option value="">Urban / Rural</option>
+          <option value="urban">Urban</option>
+          <option value="rural">Rural</option>
+        </select>
+
+        <button type="submit">Search</button>
+
+      </form>
+
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <main class="results-section">
+
+    <div class="results-header">
+      <h2>Results</h2>
+      <span id="resultCount">0</span>
+    </div>
+
+    <div id="resultsGrid" class="school-grid"></div>
+
+    <p id="emptyState" class="empty-state hidden">
+      No schools found. Try adjusting filters.
+    </p>
+
+  </main>
+
+  <!-- APP SCRIPT -->
+  <script>
+    // =========================
+    // SUPABASE CONFIG
+    // =========================
+    const SUPABASE_URL = "https://ulqsavnzjzvxqcihsmmv.supabase.co";
+    const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE";
+
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // =========================
+    // DOM ELEMENTS
+    // =========================
+    const form = document.getElementById("searchForm");
+    const input = document.getElementById("searchInput");
+    const stateFilter = document.getElementById("stateFilter");
+    const lgaFilter = document.getElementById("lgaFilter");
+    const typeFilter = document.getElementById("typeFilter");
+    const settlementFilter = document.getElementById("settlementFilter");
+
+    const resultsGrid = document.getElementById("resultsGrid");
+    const resultCount = document.getElementById("resultCount");
+    const emptyState = document.getElementById("emptyState");
+
+    // =========================
+    // LOAD STATES ON INIT
+    // =========================
+    async function loadStates() {
+      const { data } = await client
+        .from("schools")
+        .select("state")
+        .order("state");
+
+      const uniqueStates = [...new Set(data.map(s => s.state))];
+
+      uniqueStates.forEach(state => {
+        const option = document.createElement("option");
+        option.value = state;
+        option.textContent = state;
+        stateFilter.appendChild(option);
+      });
+    }
+
+    loadStates();
+
+    // =========================
+    // SEARCH FUNCTION
+    // =========================
+    async function searchSchools() {
+
+      let query = client.from("schools").select("*").limit(50);
+
+      // search by name
+      if (input.value) {
+        query = query.ilike("name", `%${input.value}%`);
+      }
+
+      if (stateFilter.value) {
+        query = query.eq("state", stateFilter.value);
+      }
+
+      if (lgaFilter.value) {
+        query = query.eq("lga", lgaFilter.value);
+      }
+
+      if (typeFilter.value) {
+        query = query.eq("level", typeFilter.value);
+      }
+
+      if (settlementFilter.value) {
+        query = query.eq("settlement_type", settlementFilter.value);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      renderResults(data);
+    }
+
+    // =========================
+    // RENDER RESULTS
+    // =========================
+    function renderResults(data) {
+
+      resultsGrid.innerHTML = "";
+
+      resultCount.textContent = data.length;
+
+      if (!data.length) {
+        emptyState.classList.remove("hidden");
+        return;
+      }
+
+      emptyState.classList.add("hidden");
+
+      data.forEach(school => {
+
+        const card = document.createElement("div");
+        card.className = "school-card";
+
+        card.innerHTML = `
+          <h3>${school.name}</h3>
+          <p>${school.state} • ${school.lga}</p>
+          <p>Level: ${school.level}</p>
+          <p>Type: ${school.settlement_type}</p>
+          <small>Tags: ${(school.ai_tags || []).join(", ")}</small>
+        `;
+
+        resultsGrid.appendChild(card);
+      });
+    }
+
+    // =========================
+    // EVENTS
+    // =========================
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      searchSchools();
+    });
+
+    // auto-search on change
+    [stateFilter, lgaFilter, typeFilter, settlementFilter].forEach(el => {
+      el.addEventListener("change", searchSchools);
+    });
+
+  </script>
+
+</body>
+</html>
