@@ -3,7 +3,9 @@ const supabaseKey = "sb_publishable_gA0zVRQ7iYAWekG3BDrDiQ_uBcDYRe7"
 
 const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-// DOM
+// =========================
+// DOM ELEMENTS
+// =========================
 const form = document.querySelector("#searchForm")
 const searchInput = document.querySelector("#searchInput")
 const stateFilter = document.querySelector("#stateFilter")
@@ -13,10 +15,56 @@ const emptyState = document.querySelector("#emptyState")
 const resultCount = document.querySelector("#resultCount")
 
 // =========================
-// FETCH FROM SUPABASE
+// STATE MANAGEMENT
 // =========================
-async function fetchSchools() {
-  let query = supabase.from("nigeria_data").select("*").limit(50)
+let page = 0
+const limit = 20
+let loading = false
+let hasMore = true
+let debounceTimer = null
+
+// =========================
+// LOADING UI
+// =========================
+function showLoading() {
+  loading = true
+  resultCount.textContent = "Loading..."
+}
+
+function hideLoading() {
+  loading = false
+}
+
+// =========================
+// DEBOUNCE FUNCTION
+// =========================
+function debounce(fn, delay = 500) {
+  return (...args) => {
+    clearTimeout(debounceTimer)
+    debounceTimer = setTimeout(() => fn(...args), delay)
+  }
+}
+
+// =========================
+// FETCH DATA (PAGINATION + FILTERS)
+// =========================
+async function fetchSchools(reset = false) {
+  if (loading) return
+
+  showLoading()
+
+  if (reset) {
+    page = 0
+    hasMore = true
+    grid.innerHTML = ""
+  }
+
+  if (!hasMore) return
+
+  let query = supabase
+    .from("nigeria_data")
+    .select("*")
+    .range(page * limit, (page + 1) * limit - 1)
 
   // SEARCH FILTER
   if (searchInput.value) {
@@ -28,30 +76,41 @@ async function fetchSchools() {
     query = query.eq("state", stateFilter.value)
   }
 
+  // LGA FILTER (NEW FEATURE)
+  if (typeFilter.value) {
+    query = query.eq("lga", typeFilter.value)
+  }
+
   const { data, error } = await query
 
+  hideLoading()
+
   if (error) {
-    console.error("Error fetching:", error)
+    console.error(error)
+    return
+  }
+
+  if (!data || data.length === 0) {
+    hasMore = false
+
+    if (page === 0) {
+      showEmptyState()
+    }
     return
   }
 
   renderSchools(data)
+
+  page++
 }
 
 // =========================
-// RENDER
+// RENDER FUNCTION
 // =========================
 function renderSchools(schools) {
-  grid.innerHTML = ""
-
-  resultCount.textContent = `${schools.length} schools found`
-
-  if (!schools || schools.length === 0) {
-    emptyState.classList.remove("hidden")
-    return
-  }
-
   emptyState.classList.add("hidden")
+
+  resultCount.textContent = `${grid.children.length + schools.length} schools`
 
   schools.forEach((school) => {
     const card = document.createElement("div")
@@ -59,11 +118,13 @@ function renderSchools(schools) {
 
     card.innerHTML = `
       <div class="card-header">
-        <h2 class="school-name">${school.school_name || "No name"}</h2>
+        <h2>${school.school_name || "No name"}</h2>
         <span class="tag">
-          ${school.education_levels?.primary ? "Primary" :
+          ${
+            school.education_levels?.primary ? "Primary" :
             school.education_levels?.secondary ? "Secondary" :
-            "Tertiary"}
+            "Tertiary"
+          }
         </span>
       </div>
 
@@ -72,8 +133,8 @@ function renderSchools(schools) {
         <p>${school.address || ""}</p>
 
         <div class="meta-info">
-          <span class="type-badge">${school.delivery_mode || "Unknown"}</span>
-          <span class="ownership-badge">${school.ownership?.type || "Unknown"}</span>
+          <span>${school.delivery_mode || "Unknown"}</span>
+          <span>${school.ownership?.type || "Unknown"}</span>
         </div>
       </div>
     `
@@ -83,16 +144,46 @@ function renderSchools(schools) {
 }
 
 // =========================
+// EMPTY STATE + SMART SUGGESTIONS
+// =========================
+function showEmptyState() {
+  emptyState.classList.remove("hidden")
+
+  emptyState.innerHTML = `
+    <div>
+      <p>No schools found 😕</p>
+      <small>Try searching: "Lagos", "University", or "Secondary"</small>
+    </div>
+  `
+}
+
+// =========================
+// DEBOUNCED SEARCH
+// =========================
+const debouncedSearch = debounce(() => fetchSchools(true), 600)
+
+// =========================
 // EVENTS
 // =========================
+searchInput.addEventListener("input", debouncedSearch)
+stateFilter.addEventListener("change", () => fetchSchools(true))
+typeFilter.addEventListener("change", () => fetchSchools(true))
+
 form.addEventListener("submit", (e) => {
   e.preventDefault()
-  fetchSchools()
+  fetchSchools(true)
 })
 
-searchInput.addEventListener("input", fetchSchools)
-stateFilter.addEventListener("change", fetchSchools)
-typeFilter.addEventListener("change", fetchSchools)
+// =========================
+// INFINITE SCROLL
+// =========================
+window.addEventListener("scroll", () => {
+  if (
+    window.innerHeight + window.scrollY >= document.body.offsetHeight - 200
+  ) {
+    fetchSchools()
+  }
+})
 
 // =========================
 // INITIAL LOAD
