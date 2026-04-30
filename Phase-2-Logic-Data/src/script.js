@@ -1,35 +1,31 @@
-let supabase;
+// =========================
+// SUPABASE INIT
+// =========================
+const supabaseUrl = "https://rjqrdgdcnotxrwpvhxzp.supabase.co"
+const supabaseKey = "sb_publishable_gA0zVRQ7iYAWekG3BDrDiQ_uBcDYRe7"
+
+let supabase
 
 // =========================
-// INIT AFTER DOM READY
+// DOM READY
 // =========================
-document.addEventListener("DOMContentLoaded", async () => {
-  initSupabase()
-  initDOM()
-  initEvents()
-  await fetchSchools(true)
-})
-
-// =========================
-// SUPABASE INIT (SAFE)
-// =========================
-function initSupabase() {
-  const supabaseUrl = "https://rjqrdgdcnotxrwpvhxzp.supabase.co"
-  const supabaseKey = "sb_publishable_gA0zVRQ7iYAWekG3BDrDiQ_uBcDYRe7"
-
+document.addEventListener("DOMContentLoaded", () => {
   if (!window.supabase) {
-    throw new Error("Supabase CDN not loaded")
+    console.error("Supabase CDN not loaded")
+    return
   }
 
   supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
-}
+
+  init()
+})
 
 // =========================
-// DOM
+// DOM ELEMENTS
 // =========================
 let grid, searchInput, stateFilter, typeFilter, resultCount, emptyState
 
-function initDOM() {
+function initDom() {
   grid = document.querySelector("#resultsGrid")
   searchInput = document.querySelector("#searchInput")
   stateFilter = document.querySelector("#stateFilter")
@@ -48,13 +44,13 @@ let loading = false
 // =========================
 // HELPERS
 // =========================
-const safe = (v, f = "Unknown") =>
-  v?.toString().trim() || f
+const safe = (v, f = "") => (v?.toString().trim() ? v.toString().trim() : f)
 
-function formatLocation(s) {
-  if (s.lga && s.state) return `${s.lga}, ${s.state}`
-  if (s.state) return s.state
-  return "Location not available"
+function normalizeOwnership(v) {
+  if (!v) return "Unknown"
+  if (typeof v === "string") return v
+  if (typeof v === "object") return v.type || v.name || "Unknown"
+  return "Unknown"
 }
 
 function getLevel(levels = {}) {
@@ -64,20 +60,30 @@ function getLevel(levels = {}) {
   return "Unknown"
 }
 
+function formatLocation(s) {
+  if (s.lga && s.state) return `${s.lga}, ${s.state}`
+  if (s.state) return s.state
+  if (s.lga) return s.lga
+  return "Location not available"
+}
+
+// =========================
+// NORMALIZE
+// =========================
 function normalize(s) {
   return {
     school_name: safe(s.school_name, "No name"),
-    state: safe(s.state, ""),
-    lga: safe(s.lga, ""),
-    address: safe(s.address, ""),
-    delivery_mode: safe(s.delivery_mode),
-    ownership: safe(s.ownership),
+    state: safe(s.state),
+    lga: safe(s.lga),
+    address: safe(s.address),
+    delivery_mode: safe(s.delivery_mode, "Unknown"),
+    ownership: normalizeOwnership(s.ownership),
     education_levels: s.education_levels || {}
   }
 }
 
 // =========================
-// FETCH
+// FETCH DATA
 // =========================
 async function fetchSchools(reset = false) {
   if (loading) return
@@ -86,7 +92,7 @@ async function fetchSchools(reset = false) {
   if (reset) {
     page = 0
     grid.innerHTML = ""
-    emptyState.classList.add("hidden")
+    emptyState?.classList.add("hidden")
   }
 
   let query = supabase
@@ -94,23 +100,21 @@ async function fetchSchools(reset = false) {
     .select("*")
     .range(page * limit, (page + 1) * limit - 1)
 
-  const search = searchInput.value.trim()
-  const state = stateFilter.value
-  const level = typeFilter.value
+  const search = searchInput?.value?.trim()
 
-  // ✅ FIX 1: search
   if (search) {
     query = query.ilike("school_name", `%${search}%`)
   }
 
-  // ✅ FIX 2: state filter
-  if (state) {
-    query = query.eq("state", state)
+  if (stateFilter?.value) {
+    query = query.eq("state", stateFilter.value)
   }
 
-  // ✅ FIX 3: education level filter (IMPORTANT FIX)
-  if (level) {
-    query = query.eq(`education_levels->>${level}`, "true")
+  // ✅ FIXED: DO NOT misuse lga for type filtering
+  if (typeFilter?.value) {
+    query = query.contains("education_levels", {
+      [typeFilter.value]: true
+    })
   }
 
   const { data, error } = await query
@@ -123,7 +127,7 @@ async function fetchSchools(reset = false) {
   }
 
   if (!data || data.length === 0) {
-    showEmpty()
+    if (page === 0) showEmpty()
     return
   }
 
@@ -135,7 +139,7 @@ async function fetchSchools(reset = false) {
 // RENDER
 // =========================
 function render(schools) {
-  emptyState.classList.add("hidden")
+  emptyState?.classList.add("hidden")
 
   resultCount.textContent = `${grid.children.length + schools.length} schools`
 
@@ -150,8 +154,7 @@ function render(schools) {
       </div>
 
       <div class="card-body">
-        <p>📍 ${formatLocation(s)}</p>
-
+        <p><strong>Location:</strong> 📍 ${formatLocation(s)}</p>
         ${s.address ? `<p>${s.address}</p>` : ""}
 
         <div class="meta-info">
@@ -170,14 +173,25 @@ function render(schools) {
 // =========================
 function showEmpty() {
   emptyState.classList.remove("hidden")
-  emptyState.textContent = "No schools found"
+  emptyState.innerHTML = `
+    <p>No schools found</p>
+  `
 }
 
 // =========================
 // EVENTS
 // =========================
 function initEvents() {
-  searchInput.addEventListener("input", () => fetchSchools(true))
-  stateFilter.addEventListener("change", () => fetchSchools(true))
-  typeFilter.addEventListener("change", () => fetchSchools(true))
+  searchInput?.addEventListener("input", () => fetchSchools(true))
+  stateFilter?.addEventListener("change", () => fetchSchools(true))
+  typeFilter?.addEventListener("change", () => fetchSchools(true))
+}
+
+// =========================
+// INIT APP
+// =========================
+function init() {
+  initDom()
+  initEvents()
+  fetchSchools()
 }
