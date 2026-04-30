@@ -1,16 +1,16 @@
 // =========================
-// SUPABASE INIT (SAFE BOOTSTRAP)
+// SUPABASE INIT (FIXED SAFE VERSION)
 // =========================
 const supabaseUrl = "https://rjqrdgdcnotxrwpvhxzp.supabase.co"
 const supabaseKey = "sb_publishable_gA0zVRQ7iYAWekG3BDrDiQ_uBcDYRe7"
 
-// wait until Supabase CDN is ready
+// wait until library exists
 if (!window.supabase) {
-  console.error("Supabase failed to load. Check CDN script order.")
+  throw new Error("Supabase failed to load. Check CDN script order.")
 }
 
-const supabase = window.supabase?.createClient?.(supabaseUrl, supabaseKey)
-
+// correct v2 usage
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
 if (!supabase) {
   throw new Error("Supabase client init failed")
 }
