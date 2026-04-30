@@ -12,11 +12,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <!-- Supabase MUST load first -->
-    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- ========================= -->
+  <!-- SCRIPTS (FIXED ORDER) -->
+  <!-- ========================= -->
 
-  <!-- Your app -->
-    <script defer src="src/script.js"></script>
+  <!-- Supabase MUST load first (NO defer to avoid undefined issues) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Your app (deferred so DOM is ready) -->
+  <script defer src="src/script.js"></script>
 </head>
 
 <body>
@@ -24,8 +28,11 @@
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="logo">
-      <img src="assets/images/inamatrix-logo.png" alt="Inamatrix Logo"
-           onerror="this.style.display='none'">
+      <img 
+        src="assets/images/inamatrix-logo.png" 
+        alt="Inamatrix Logo"
+        onerror="this.style.display='none'"
+      />
       <span>School Navigator</span>
     </div>
   </nav>
@@ -33,6 +40,7 @@
   <!-- HERO -->
   <section class="hero">
     <div class="hero-content">
+
       <h1>Find the Best Schools in Nigeria</h1>
       <p>Search, filter and explore schools across all states.</p>
 
@@ -48,43 +56,13 @@
         <!-- STATE FILTER -->
         <select id="stateFilter">
           <option value="">All States</option>
-          <option value="Abia">Abia</option>
-          <option value="Adamawa">Adamawa</option>
-          <option value="Akwa Ibom">Akwa Ibom</option>
-          <option value="Anambra">Anambra</option>
-          <option value="Bauchi">Bauchi</option>
-          <option value="Bayelsa">Bayelsa</option>
-          <option value="Benue">Benue</option>
-          <option value="Borno">Borno</option>
-          <option value="Cross River">Cross River</option>
-          <option value="Delta">Delta</option>
-          <option value="Ebonyi">Ebonyi</option>
-          <option value="Edo">Edo</option>
-          <option value="Ekiti">Ekiti</option>
-          <option value="Enugu">Enugu</option>
-          <option value="FCT">FCT</option>
-          <option value="Gombe">Gombe</option>
-          <option value="Imo">Imo</option>
-          <option value="Jigawa">Jigawa</option>
-          <option value="Kaduna">Kaduna</option>
-          <option value="Kano">Kano</option>
-          <option value="Katsina">Katsina</option>
-          <option value="Kebbi">Kebbi</option>
-          <option value="Kogi">Kogi</option>
-          <option value="Kwara">Kwara</option>
+          <option value="Abuja">FCT (Abuja)</option>
           <option value="Lagos">Lagos</option>
-          <option value="Nasarawa">Nasarawa</option>
-          <option value="Niger">Niger</option>
-          <option value="Ogun">Ogun</option>
-          <option value="Ondo">Ondo</option>
-          <option value="Osun">Osun</option>
-          <option value="Oyo">Oyo</option>
-          <option value="Plateau">Plateau</option>
+          <option value="Kano">Kano</option>
           <option value="Rivers">Rivers</option>
-          <option value="Sokoto">Sokoto</option>
-          <option value="Taraba">Taraba</option>
-          <option value="Yobe">Yobe</option>
-          <option value="Zamfara">Zamfara</option>
+          <option value="Oyo">Oyo</option>
+          <option value="Delta">Delta</option>
+          <option value="Edo">Edo</option>
         </select>
 
         <!-- TYPE FILTER -->
@@ -98,6 +76,7 @@
         <button type="submit">Search</button>
 
       </form>
+
     </div>
   </section>
 
