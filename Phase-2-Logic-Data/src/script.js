@@ -1,91 +1,77 @@
-js
 // =========================
-// CONFIGURATION (UPDATED WITH YOUR NEW KEY)
+// CONFIGURATION
 // =========================
-const supabaseUrl = "https://rjqrdgdcnotxrwpvhxzp.supabase.co"
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqcXJkZ2Rjbm90eHJ3cHZoeHpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjkxMzgsImV4cCI6MjA5MzA0NTEzOH0.hbVnC_GVOPZlFbnqCwOk_iPHa5UkcOYH5ZLfY0D_kvw"
+const supabaseUrl = "https://rjqrdgdcnotxrwpvhxzp.supabase.co";
+
+const supabaseKey =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqcXJkZ2Rjbm90eHJ3cHZoeHpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjkxMzgsImV4cCI6MjA5MzA0NTEzOH0.hbVnC_GVOPZlFbnqCwOk_iPHa5UkcOYH5ZLfY0D_kvw";
 
 let supabase;
 
+// =========================
+// INIT
+// =========================
 document.addEventListener("DOMContentLoaded", () => {
-    if (window.supabase) {
-        supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        initApp(); // Start your app functions here
-    } else {
-        console.error("Supabase CDN failed to load.");
-    }
-});
-
-// =========================
-// NORMALIZE (Fixed for your actual data keys)
-// =========================
-function normalize(s) {
-  // Extracting ownership type from the object I saw in your DB
-  const ownershipType = s.ownership?.type || "Public";
-  
-  // Extracting education level from your boolean flags
-  let level = "Primary";
-  if (s.education_levels?.secondary?.junior_secondary || s.education_levels?.secondary?.senior_secondary) level = "Secondary";
-  if (s.education_levels?.tertiary && Object.values(s.education_levels.tertiary).some(v => v)) level = "Tertiary";
-
-  return {
-    school_name: s.school_name || "Unnamed School",
-    location: s.location || `${s.lga}, ${s.state}`,
-    address: s.address || "",
-    level: level,
-    ownership: ownershipType.charAt(0).toUpperCase() + ownershipType.slice(1),
-    mode: s.delivery_mode || "Day"
+  if (!window.supabase) {
+    console.error("Supabase CDN failed to load.");
+    return;
   }
-}
-// =========================
-// DOM ELEMENTS
-// =========================
-let grid, searchInput, stateFilter, typeFilter, resultCount, emptyState
 
-function initDom() {
-  grid = document.querySelector("#resultsGrid")
-  searchInput = document.querySelector("#searchInput")
-  stateFilter = document.querySelector("#stateFilter")
-  typeFilter = document.querySelector("#typeFilter")
-  resultCount = document.querySelector("#resultCount")
-  emptyState = document.querySelector("#emptyState")
-}
+  supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+  init(); // ✅ FIXED (was initApp)
+});
 
 // =========================
 // STATE
 // =========================
-let page = 0
-const limit = 20
-let loading = false
+let page = 0;
+const limit = 20;
+let loading = false;
+
+// =========================
+// DOM
+// =========================
+let grid, searchInput, stateFilter, typeFilter, resultCount, emptyState;
+
+function initDom() {
+  grid = document.querySelector("#resultsGrid");
+  searchInput = document.querySelector("#searchInput");
+  stateFilter = document.querySelector("#stateFilter");
+  typeFilter = document.querySelector("#typeFilter");
+  resultCount = document.querySelector("#resultCount");
+  emptyState = document.querySelector("#emptyState");
+}
 
 // =========================
 // HELPERS
 // =========================
-const safe = (v, f = "") => (v?.toString().trim() ? v.toString().trim() : f)
+const safe = (v, f = "") =>
+  v?.toString().trim() ? v.toString().trim() : f;
 
 function normalizeOwnership(v) {
-  if (!v) return "Unknown"
-  if (typeof v === "string") return v
-  if (typeof v === "object") return v.type || v.name || "Unknown"
-  return "Unknown"
+  if (!v) return "Unknown";
+  if (typeof v === "string") return v;
+  if (typeof v === "object") return v.type || v.name || "Unknown";
+  return "Unknown";
 }
 
 function getLevel(levels = {}) {
-  if (levels.primary) return "Primary"
-  if (levels.secondary) return "Secondary"
-  if (levels.tertiary) return "Tertiary"
-  return "Unknown"
+  if (levels.primary) return "Primary";
+  if (levels.secondary) return "Secondary";
+  if (levels.tertiary) return "Tertiary";
+  return "Unknown";
 }
 
 function formatLocation(s) {
-  if (s.lga && s.state) return `${s.lga}, ${s.state}`
-  if (s.state) return s.state
-  if (s.lga) return s.lga
-  return "Location not available"
+  if (s.lga && s.state) return `${s.lga}, ${s.state}`;
+  if (s.state) return s.state;
+  if (s.lga) return s.lga;
+  return "Location not available";
 }
 
 // =========================
-// NORMALIZE
+// SINGLE NORMALIZE (FIXED - NO DUPLICATES)
 // =========================
 function normalize(s) {
   return {
@@ -96,73 +82,78 @@ function normalize(s) {
     delivery_mode: safe(s.delivery_mode, "Unknown"),
     ownership: normalizeOwnership(s.ownership),
     education_levels: s.education_levels || {}
-  }
+  };
 }
 
 // =========================
-// FETCH DATA
+// FETCH
 // =========================
 async function fetchSchools(reset = false) {
-  if (loading) return
-  loading = true
+  if (loading) return;
+  loading = true;
 
   if (reset) {
-    page = 0
-    grid.innerHTML = ""
-    emptyState?.classList.add("hidden")
+    page = 0;
+    grid.innerHTML = "";
+    emptyState?.classList.add("hidden");
   }
 
   let query = supabase
     .from("nigeria_data")
     .select("*")
-    .range(page * limit, (page + 1) * limit - 1)
+    .range(page * limit, (page + 1) * limit - 1);
 
-  const search = searchInput?.value?.trim()
+  const search = searchInput?.value?.trim();
 
   if (search) {
-    query = query.ilike("school_name", `%${search}%`)
+    query = query.ilike("school_name", `%${search}%`);
   }
 
   if (stateFilter?.value) {
-    query = query.eq("state", stateFilter.value)
+    query = query.eq("state", stateFilter.value);
   }
 
-  // ✅ FIXED: DO NOT misuse lga for type filtering
+  // ✅ SAFE FILTER (more reliable than contains)
   if (typeFilter?.value) {
-    query = query.contains("education_levels", {
-      [typeFilter.value]: true
-    })
+    const type = typeFilter.value;
+
+    query = query.or(
+      `education_levels->primary.eq.${type === "primary"},` +
+      `education_levels->secondary.eq.${type === "secondary"},` +
+      `education_levels->tertiary.eq.${type === "tertiary"}`
+    );
   }
 
-  const { data, error } = await query
+  const { data, error } = await query;
 
-  loading = false
+  loading = false;
 
   if (error) {
-    console.error(error)
-    return
+    console.error(error);
+    return;
   }
 
   if (!data || data.length === 0) {
-    if (page === 0) showEmpty()
-    return
+    if (page === 0) showEmpty();
+    return;
   }
 
-  render(data.map(normalize))
-  page++
+  render(data.map(normalize));
+  page++;
 }
 
 // =========================
 // RENDER
 // =========================
 function render(schools) {
-  emptyState?.classList.add("hidden")
+  emptyState?.classList.add("hidden");
 
-  resultCount.textContent = `${grid.children.length + schools.length} schools`
+  resultCount.textContent =
+    `${grid.children.length + schools.length} schools`;
 
   schools.forEach(s => {
-    const card = document.createElement("div")
-    card.className = "school-card"
+    const card = document.createElement("div");
+    card.className = "school-card";
 
     card.innerHTML = `
       <div class="card-header">
@@ -179,36 +170,34 @@ function render(schools) {
           <span>${s.ownership}</span>
         </div>
       </div>
-    `
+    `;
 
-    grid.appendChild(card)
-  })
+    grid.appendChild(card);
+  });
 }
 
 // =========================
 // EMPTY STATE
 // =========================
 function showEmpty() {
-  emptyState.classList.remove("hidden")
-  emptyState.innerHTML = `
-    <p>No schools found</p>
-  `
+  emptyState.classList.remove("hidden");
+  emptyState.innerHTML = `<p>No schools found</p>`;
 }
 
 // =========================
 // EVENTS
 // =========================
 function initEvents() {
-  searchInput?.addEventListener("input", () => fetchSchools(true))
-  stateFilter?.addEventListener("change", () => fetchSchools(true))
-  typeFilter?.addEventListener("change", () => fetchSchools(true))
+  searchInput?.addEventListener("input", () => fetchSchools(true));
+  stateFilter?.addEventListener("change", () => fetchSchools(true));
+  typeFilter?.addEventListener("change", () => fetchSchools(true));
 }
 
 // =========================
 // INIT APP
 // =========================
 function init() {
-  initDom()
-  initEvents()
-  fetchSchools()
+  initDom();
+  initEvents();
+  fetchSchools();
 }
