@@ -22,16 +22,32 @@ const resultCount = document.getElementById("resultCount");
 const emptyState = document.getElementById("emptyState");
 
 // =========================
-// LOAD INITIAL DATA (STATES)
+// UTIL: DEBOUNCE (IMPORTANT FOR SCALE)
+// =========================
+function debounce(fn, delay = 300) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn(...args), delay);
+  };
+}
+
+// =========================
+// LOAD STATES (CLEANED + UNIQUE)
 // =========================
 async function loadStates() {
   const { data, error } = await client
     .from("schools")
     .select("state");
 
-  if (error) return console.error(error);
+  if (error || !data) {
+    console.error(error);
+    return;
+  }
 
-  const uniqueStates = [...new Set(data.map(s => s.state))];
+  const uniqueStates = [...new Set(data.map(s => s.state).filter(Boolean))];
+
+  stateFilter.innerHTML = `<option value="">All States</option>`;
 
   uniqueStates.forEach(state => {
     const opt = document.createElement("option");
@@ -41,7 +57,30 @@ async function loadStates() {
   });
 }
 
-loadStates();
+// =========================
+// LOAD LGAs BASED ON STATE
+// =========================
+async function loadLGAs(state) {
+  lgaFilter.innerHTML = `<option value="">All LGAs</option>`;
+
+  if (!state) return;
+
+  const { data, error } = await client
+    .from("schools")
+    .select("lga")
+    .eq("state", state);
+
+  if (error || !data) return;
+
+  const uniqueLGAs = [...new Set(data.map(l => l.lga).filter(Boolean))];
+
+  uniqueLGAs.forEach(lga => {
+    const opt = document.createElement("option");
+    opt.value = lga;
+    opt.textContent = lga;
+    lgaFilter.appendChild(opt);
+  });
+}
 
 // =========================
 // MAIN SEARCH FUNCTION
@@ -53,9 +92,11 @@ async function searchSchools() {
     .select("*")
     .limit(50);
 
-  // name search (case-insensitive)
-  if (input.value) {
-    query = query.ilike("name", `%${input.value}%`);
+  // safer search (works even if empty)
+  const keyword = input.value?.trim();
+
+  if (keyword) {
+    query = query.ilike("name", `%${keyword}%`);
   }
 
   if (stateFilter.value) {
@@ -81,7 +122,7 @@ async function searchSchools() {
     return;
   }
 
-  renderResults(data);
+  renderResults(data || []);
 }
 
 // =========================
@@ -105,10 +146,10 @@ function renderResults(data) {
     card.className = "school-card";
 
     card.innerHTML = `
-      <h3>${school.name}</h3>
-      <p>${school.state} • ${school.lga}</p>
-      <p><b>Level:</b> ${school.level}</p>
-      <p><b>Type:</b> ${school.settlement_type}</p>
+      <h3>${school.name || "Unnamed School"}</h3>
+      <p>${school.state || ""} • ${school.lga || ""}</p>
+      <p><b>Level:</b> ${school.level || "N/A"}</p>
+      <p><b>Type:</b> ${school.settlement_type || "N/A"}</p>
       <small>${(school.ai_tags || []).join(", ")}</small>
     `;
 
@@ -117,13 +158,28 @@ function renderResults(data) {
 }
 
 // =========================
-// EVENTS
+// EVENTS (OPTIMIZED)
 // =========================
+const debouncedSearch = debounce(searchSchools, 300);
+
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   searchSchools();
 });
 
-[stateFilter, lgaFilter, typeFilter, settlementFilter].forEach(el => {
+input.addEventListener("input", debouncedSearch);
+
+stateFilter.addEventListener("change", () => {
+  loadLGAs(stateFilter.value);
+  searchSchools();
+});
+
+[lgaFilter, typeFilter, settlementFilter].forEach(el => {
   el.addEventListener("change", searchSchools);
 });
+
+// =========================
+// INIT
+// =========================
+loadStates();
+searchSchools();
