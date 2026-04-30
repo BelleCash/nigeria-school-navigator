@@ -24,6 +24,20 @@ let hasMore = true
 let debounceTimer = null
 
 // =========================
+// LOCATION FORMATTER (FIXED CORE BUG)
+// =========================
+function formatLocation(school) {
+  const lga = school.lga?.trim()
+  const state = school.state?.trim()
+
+  if (lga && state) return `${lga}, ${state}`
+  if (state) return state
+  if (lga) return lga
+
+  return "Location not available"
+}
+
+// =========================
 // LOADING UI
 // =========================
 function showLoading() {
@@ -59,7 +73,10 @@ async function fetchSchools(reset = false) {
     grid.innerHTML = ""
   }
 
-  if (!hasMore) return
+  if (!hasMore) {
+    hideLoading()
+    return
+  }
 
   let query = supabase
     .from("nigeria_data")
@@ -67,8 +84,8 @@ async function fetchSchools(reset = false) {
     .range(page * limit, (page + 1) * limit - 1)
 
   // SEARCH FILTER
-  if (searchInput.value) {
-    query = query.ilike("school_name", `%${searchInput.value}%`)
+  if (searchInput.value.trim()) {
+    query = query.ilike("school_name", `%${searchInput.value.trim()}%`)
   }
 
   // STATE FILTER
@@ -76,7 +93,7 @@ async function fetchSchools(reset = false) {
     query = query.eq("state", stateFilter.value)
   }
 
-  // LGA FILTER (NEW FEATURE)
+  // LGA FILTER
   if (typeFilter.value) {
     query = query.eq("lga", typeFilter.value)
   }
@@ -86,7 +103,7 @@ async function fetchSchools(reset = false) {
   hideLoading()
 
   if (error) {
-    console.error(error)
+    console.error("Supabase error:", error)
     return
   }
 
@@ -116,25 +133,34 @@ function renderSchools(schools) {
     const card = document.createElement("div")
     card.className = "school-card"
 
+    const level =
+      school.education_levels?.primary
+        ? "Primary"
+        : school.education_levels?.secondary
+        ? "Secondary"
+        : school.education_levels?.tertiary
+        ? "Tertiary"
+        : "Unknown"
+
+    const ownership =
+      school.ownership?.type ||
+      school.ownership ||
+      "Unknown"
+
     card.innerHTML = `
       <div class="card-header">
         <h2>${school.school_name || "No name"}</h2>
-        <span class="tag">
-          ${
-            school.education_levels?.primary ? "Primary" :
-            school.education_levels?.secondary ? "Secondary" :
-            "Tertiary"
-          }
-        </span>
+        <span class="tag">${level}</span>
       </div>
 
       <div class="card-body">
-        <p><strong>Location:</strong> ${school.lga || "N/A"}, ${school.state || "N/A"}</p>
-        <p>${school.address || ""}</p>
+        <p><strong>Location:</strong> 📍 ${formatLocation(school)}</p>
+
+        ${school.address ? `<p>${school.address}</p>` : ""}
 
         <div class="meta-info">
           <span>${school.delivery_mode || "Unknown"}</span>
-          <span>${school.ownership?.type || "Unknown"}</span>
+          <span>${ownership}</span>
         </div>
       </div>
     `
@@ -144,14 +170,14 @@ function renderSchools(schools) {
 }
 
 // =========================
-// EMPTY STATE + SMART SUGGESTIONS
+// EMPTY STATE
 // =========================
 function showEmptyState() {
   emptyState.classList.remove("hidden")
 
   emptyState.innerHTML = `
     <div>
-      <p>No schools found 😕</p>
+      <p>No schools found</p>
       <small>Try searching: "Lagos", "University", or "Secondary"</small>
     </div>
   `
