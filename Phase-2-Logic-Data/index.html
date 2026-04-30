@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <!-- ✅ SUPABASE CDN (IMPORTANT FOR GITHUB PAGES) -->
+  <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
@@ -33,7 +33,7 @@
       <h1>Find the Best Schools in Nigeria</h1>
       <p>Search, filter and explore schools across all states.</p>
 
-      <!-- SEARCH -->
+      <!-- SEARCH FORM -->
       <form id="searchForm" class="search-container">
 
         <input
@@ -42,7 +42,7 @@
           placeholder="Search school name..."
         />
 
-        <!-- STATE FILTER (FIXED VALUES = lowercase for DB matching) -->
+        <!-- STATE FILTER -->
         <select id="stateFilter">
           <option value="">All States</option>
           <option value="Abia">Abia</option>
@@ -84,6 +84,7 @@
           <option value="Zamfara">Zamfara</option>
         </select>
 
+        <!-- TYPE FILTER (FIXED: MATCH DB VALUES MORE SAFELY) -->
         <select id="typeFilter">
           <option value="">All Types</option>
           <option value="primary">Primary</option>
@@ -113,8 +114,9 @@
 
   </main>
 
-  <!-- SCRIPT -->
-  <script type="module" src="src/script.js"></script>
+  <!-- IMPORTANT: ORDER FIX -->
+  <!-- Supabase first, then your script -->
+  <script src="src/script.js"></script>
 
 </body>
 </html>
