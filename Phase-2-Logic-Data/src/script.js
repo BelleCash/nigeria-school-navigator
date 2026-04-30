@@ -24,15 +24,15 @@ let hasMore = true
 let debounceTimer = null
 
 // =========================
-// 🔥 CLEAN NORMALIZER (FIXES ALL GHOST VALUES)
+// 🔥 NORMALIZE DATA (CORE FIX)
 // =========================
 function normalizeSchool(raw) {
   return {
     school_name: raw.school_name || "No name",
-    state: raw.state?.trim() || null,
-    lga: raw.lga?.trim() || null,
+    state: raw.state ? raw.state.trim() : null,
+    lga: raw.lga ? raw.lga.trim() : null,
     address: raw.address || "",
-    delivery_mode: raw.delivery_mode || "Unknown",
+    delivery_mode: raw.delivery_mode || "Unknown delivery",
     ownership:
       raw.ownership?.type ||
       raw.ownership ||
@@ -56,7 +56,7 @@ function formatLocation(school) {
 }
 
 // =========================
-// UI HELPERS
+// LOADING
 // =========================
 function showLoading() {
   loading = true
@@ -118,7 +118,7 @@ async function fetchSchools(reset = false) {
   hideLoading()
 
   if (error) {
-    console.error(error)
+    console.error("Supabase error:", error)
     return
   }
 
@@ -185,7 +185,7 @@ function showEmptyState() {
   emptyState.innerHTML = `
     <div>
       <p>No schools found</p>
-      <small>Try searching: "Lagos", "University", or "Secondary"</small>
+      <small>Try searching: "Lagos", "Secondary", or "University"</small>
     </div>
   `
 }
