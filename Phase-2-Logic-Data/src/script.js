@@ -1,20 +1,42 @@
 // =========================
-// SUPABASE INIT (FIXED)
+// SUPABASE INIT (SAFE BOOTSTRAP)
 // =========================
 const supabaseUrl = "https://rjqrdgdcnotxrwpvhxzp.supabase.co"
 const supabaseKey = "sb_publishable_gA0zVRQ7iYAWekG3BDrDiQ_uBcDYRe7"
 
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+// wait until Supabase CDN is ready
+if (!window.supabase) {
+  console.error("Supabase failed to load. Check CDN script order.")
+}
+
+const supabase = window.supabase?.createClient?.(supabaseUrl, supabaseKey)
+
+if (!supabase) {
+  throw new Error("Supabase client init failed")
+}
+
+// =========================
+// WAIT FOR DOM (CRITICAL FIX)
+// =========================
+document.addEventListener("DOMContentLoaded", () => {
+  initApp()
+})
 
 // =========================
 // DOM
 // =========================
-const grid = document.querySelector("#resultsGrid")
-const searchInput = document.querySelector("#searchInput")
-const stateFilter = document.querySelector("#stateFilter")
-const typeFilter = document.querySelector("#typeFilter")
-const resultCount = document.querySelector("#resultCount")
-const emptyState = document.querySelector("#emptyState")
+let grid, searchInput, stateFilter, typeFilter, resultCount, emptyState
+
+function initDom() {
+  grid = document.querySelector("#resultsGrid")
+  searchInput = document.querySelector("#searchInput")
+  stateFilter = document.querySelector("#stateFilter")
+  typeFilter = document.querySelector("#typeFilter")
+  resultCount = document.querySelector("#resultCount")
+  emptyState = document.querySelector("#emptyState")
+
+  if (!grid) console.error("Missing #resultsGrid")
+}
 
 // =========================
 // STATE
@@ -26,49 +48,35 @@ let loading = false
 // =========================
 // SAFE HELPERS
 // =========================
-function safe(value, fallback = "Unknown") {
-  return value?.toString().trim() || fallback
-}
+const safe = (v, f = "Unknown") =>
+  v?.toString().trim() ? v.toString().trim() : f
 
 function normalizeOwnership(value) {
   if (!value) return "Unknown"
-
-  if (typeof value === "string") {
-    return value.trim() || "Unknown"
-  }
-
-  if (typeof value === "object") {
-    return (
-      value.type ||
-      value.category ||
-      value.name ||
-      "Unknown"
-    )
-  }
-
+  if (typeof value === "string") return value.trim() || "Unknown"
+  if (typeof value === "object") return value.type || value.name || "Unknown"
   return "Unknown"
 }
 
 function getEducationLevel(levels = {}) {
-  if (levels.primary === true) return "Primary"
-  if (levels.secondary === true) return "Secondary"
-  if (levels.tertiary === true) return "Tertiary"
+  if (levels.primary) return "Primary"
+  if (levels.secondary) return "Secondary"
+  if (levels.tertiary) return "Tertiary"
   return "Unknown"
 }
 
-function formatLocation(school) {
-  const lga = school.lga?.trim()
-  const state = school.state?.trim()
+function formatLocation(s) {
+  const lga = s.lga?.trim()
+  const state = s.state?.trim()
 
   if (lga && state) return `${lga}, ${state}`
   if (state) return state
   if (lga) return lga
-
   return "Location not available"
 }
 
 // =========================
-// NORMALIZE (CRITICAL FIX)
+// NORMALIZE
 // =========================
 function normalize(s) {
   return {
@@ -83,7 +91,7 @@ function normalize(s) {
 }
 
 // =========================
-// FETCH DATA
+// FETCH
 // =========================
 async function fetchSchools(reset = false) {
   if (loading) return
@@ -92,7 +100,7 @@ async function fetchSchools(reset = false) {
   if (reset) {
     page = 0
     grid.innerHTML = ""
-    emptyState.classList.add("hidden")
+    emptyState?.classList.add("hidden")
   }
 
   let query = supabase
@@ -100,17 +108,17 @@ async function fetchSchools(reset = false) {
     .select("*")
     .range(page * limit, (page + 1) * limit - 1)
 
-  const search = searchInput.value.trim()
+  const search = searchInput?.value?.trim()
 
   if (search) {
     query = query.ilike("school_name", `%${search}%`)
   }
 
-  if (stateFilter.value) {
+  if (stateFilter?.value) {
     query = query.eq("state", stateFilter.value)
   }
 
-  if (typeFilter.value) {
+  if (typeFilter?.value) {
     query = query.eq("lga", typeFilter.value)
   }
 
@@ -123,7 +131,7 @@ async function fetchSchools(reset = false) {
     return
   }
 
-  if (!data?.length) {
+  if (!data || data.length === 0) {
     if (page === 0) showEmptyState()
     return
   }
@@ -136,7 +144,7 @@ async function fetchSchools(reset = false) {
 // RENDER
 // =========================
 function render(schools) {
-  emptyState.classList.add("hidden")
+  emptyState?.classList.add("hidden")
 
   resultCount.textContent = `${grid.children.length + schools.length} schools`
 
@@ -145,7 +153,6 @@ function render(schools) {
     card.className = "school-card"
 
     const level = getEducationLevel(s.education_levels)
-
     const location = formatLocation(s)
 
     card.innerHTML = `
@@ -186,11 +193,17 @@ function showEmptyState() {
 // =========================
 // EVENTS
 // =========================
-searchInput.addEventListener("input", () => fetchSchools(true))
-stateFilter.addEventListener("change", () => fetchSchools(true))
-typeFilter.addEventListener("change", () => fetchSchools(true))
+function initEvents() {
+  searchInput.addEventListener("input", () => fetchSchools(true))
+  stateFilter.addEventListener("change", () => fetchSchools(true))
+  typeFilter.addEventListener("change", () => fetchSchools(true))
+}
 
 // =========================
-// INIT
+// INIT APP
 // =========================
-fetchSchools()
+function initApp() {
+  initDom()
+  initEvents()
+  fetchSchools()
+}
