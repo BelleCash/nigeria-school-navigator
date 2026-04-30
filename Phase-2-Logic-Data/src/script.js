@@ -24,19 +24,25 @@ let hasMore = true
 let debounceTimer = null
 
 // =========================
-// 🔥 NORMALIZE DATA (FIXES YOUR BUG)
+// 🔥 CLEAN NORMALIZER (FIXES ALL GHOST VALUES)
 // =========================
-function normalizeSchool(school) {
+function normalizeSchool(raw) {
   return {
-    ...school,
-    state: school.state?.trim() || "",
-    lga: school.lga?.trim() || "",
-    ownership: school.ownership?.type || school.ownership || "Unknown"
+    school_name: raw.school_name || "No name",
+    state: raw.state?.trim() || null,
+    lga: raw.lga?.trim() || null,
+    address: raw.address || "",
+    delivery_mode: raw.delivery_mode || "Unknown",
+    ownership:
+      raw.ownership?.type ||
+      raw.ownership ||
+      "Unknown ownership",
+    education_levels: raw.education_levels || {}
   }
 }
 
 // =========================
-// LOCATION FORMATTER (SAFE)
+// LOCATION FORMATTER
 // =========================
 function formatLocation(school) {
   const lga = school.lga
@@ -122,7 +128,7 @@ async function fetchSchools(reset = false) {
     return
   }
 
-  renderSchools(data)
+  renderSchools(data.map(normalizeSchool))
 
   page++
 }
@@ -135,9 +141,7 @@ function renderSchools(schools) {
 
   resultCount.textContent = `${grid.children.length + schools.length} schools`
 
-  schools.forEach(rawSchool => {
-    const school = normalizeSchool(rawSchool)
-
+  schools.forEach(school => {
     const card = document.createElement("div")
     card.className = "school-card"
 
@@ -152,7 +156,7 @@ function renderSchools(schools) {
 
     card.innerHTML = `
       <div class="card-header">
-        <h2>${school.school_name || "No name"}</h2>
+        <h2>${school.school_name}</h2>
         <span class="tag">${level}</span>
       </div>
 
@@ -162,7 +166,7 @@ function renderSchools(schools) {
         ${school.address ? `<p>${school.address}</p>` : ""}
 
         <div class="meta-info">
-          <span>${school.delivery_mode || "Unknown"}</span>
+          <span>${school.delivery_mode}</span>
           <span>${school.ownership}</span>
         </div>
       </div>
