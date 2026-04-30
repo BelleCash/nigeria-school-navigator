@@ -5,13 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>School Navigator | Phase 2</title>
 
-  <!-- CSS -->
   <link rel="stylesheet" href="style.css"/>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- ✅ SUPABASE CDN (IMPORTANT FOR GITHUB PAGES) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -19,70 +21,69 @@
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="logo">
-      <img src="assets/images/inamatrix-logo.png" alt="Inamatrix Logo">
+      <img src="assets/images/inamatrix-logo.png" alt="Inamatrix Logo"
+           onerror="this.style.display='none'">
       <span>School Navigator</span>
     </div>
   </nav>
 
-  <!-- HERO SECTION -->
+  <!-- HERO -->
   <section class="hero">
     <div class="hero-content">
       <h1>Find the Best Schools in Nigeria</h1>
       <p>Search, filter and explore schools across all states.</p>
 
-      <!-- SEARCH FORM -->
+      <!-- SEARCH -->
       <form id="searchForm" class="search-container">
 
-        <!-- SEARCH INPUT -->
         <input
           type="text"
           id="searchInput"
           placeholder="Search school name..."
         />
 
-        <!-- STATE FILTER -->
+        <!-- STATE FILTER (FIXED VALUES = lowercase for DB matching) -->
         <select id="stateFilter">
           <option value="">All States</option>
-          <option value="abia">Abia</option>
-          <option value="adamawa">Adamawa</option>
-          <option value="akwa-ibom">Akwa Ibom</option>
-          <option value="anambra">Anambra</option>
-          <option value="bauchi">Bauchi</option>
-          <option value="bayelsa">Bayelsa</option>
-          <option value="benue">Benue</option>
-          <option value="borno">Borno</option>
-          <option value="cross-river">Cross River</option>
-          <option value="delta">Delta</option>
-          <option value="ebonyi">Ebonyi</option>
-          <option value="edo">Edo</option>
-          <option value="ekiti">Ekiti</option>
-          <option value="enugu">Enugu</option>
-          <option value="fct">FCT (Abuja)</option>
-          <option value="gombe">Gombe</option>
-          <option value="imo">Imo</option>
-          <option value="jigawa">Jigawa</option>
-          <option value="kaduna">Kaduna</option>
-          <option value="kano">Kano</option>
-          <option value="katsina">Katsina</option>
-          <option value="kebbi">Kebbi</option>
-          <option value="kogi">Kogi</option>
-          <option value="kwara">Kwara</option>
-          <option value="lagos">Lagos</option>
-          <option value="nasarawa">Nasarawa</option>
-          <option value="niger">Niger</option>
-          <option value="ogun">Ogun</option>
-          <option value="ondo">Ondo</option>
-          <option value="osun">Osun</option>
-          <option value="oyo">Oyo</option>
-          <option value="plateau">Plateau</option>
-          <option value="rivers">Rivers</option>
-          <option value="sokoto">Sokoto</option>
-          <option value="taraba">Taraba</option>
-          <option value="yobe">Yobe</option>
-          <option value="zamfara">Zamfara</option>
+          <option value="Abia">Abia</option>
+          <option value="Adamawa">Adamawa</option>
+          <option value="Akwa Ibom">Akwa Ibom</option>
+          <option value="Anambra">Anambra</option>
+          <option value="Bauchi">Bauchi</option>
+          <option value="Bayelsa">Bayelsa</option>
+          <option value="Benue">Benue</option>
+          <option value="Borno">Borno</option>
+          <option value="Cross River">Cross River</option>
+          <option value="Delta">Delta</option>
+          <option value="Ebonyi">Ebonyi</option>
+          <option value="Edo">Edo</option>
+          <option value="Ekiti">Ekiti</option>
+          <option value="Enugu">Enugu</option>
+          <option value="FCT">FCT</option>
+          <option value="Gombe">Gombe</option>
+          <option value="Imo">Imo</option>
+          <option value="Jigawa">Jigawa</option>
+          <option value="Kaduna">Kaduna</option>
+          <option value="Kano">Kano</option>
+          <option value="Katsina">Katsina</option>
+          <option value="Kebbi">Kebbi</option>
+          <option value="Kogi">Kogi</option>
+          <option value="Kwara">Kwara</option>
+          <option value="Lagos">Lagos</option>
+          <option value="Nasarawa">Nasarawa</option>
+          <option value="Niger">Niger</option>
+          <option value="Ogun">Ogun</option>
+          <option value="Ondo">Ondo</option>
+          <option value="Osun">Osun</option>
+          <option value="Oyo">Oyo</option>
+          <option value="Plateau">Plateau</option>
+          <option value="Rivers">Rivers</option>
+          <option value="Sokoto">Sokoto</option>
+          <option value="Taraba">Taraba</option>
+          <option value="Yobe">Yobe</option>
+          <option value="Zamfara">Zamfara</option>
         </select>
 
-        <!-- SCHOOL TYPE -->
         <select id="typeFilter">
           <option value="">All Types</option>
           <option value="primary">Primary</option>
@@ -90,14 +91,13 @@
           <option value="tertiary">Tertiary</option>
         </select>
 
-        <!-- BUTTON -->
         <button type="submit">Search</button>
 
       </form>
     </div>
   </section>
 
-  <!-- RESULTS SECTION -->
+  <!-- RESULTS -->
   <main class="results-section">
 
     <div class="results-header">
@@ -105,10 +105,8 @@
       <span id="resultCount"></span>
     </div>
 
-    <!-- RESULTS GRID -->
     <div id="resultsGrid" class="school-grid"></div>
 
-    <!-- EMPTY STATE -->
     <p id="emptyState" class="empty-state hidden">
       No schools found. Try adjusting your filters.
     </p>
