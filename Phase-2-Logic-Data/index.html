@@ -16,11 +16,11 @@
   <!-- SCRIPTS (FIXED ORDER) -->
   <!-- ========================= -->
 
-  <!-- Supabase MUST load first (NO defer to avoid undefined issues) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 
-  <!-- Your app (deferred so DOM is ready) -->
-  <script defer src="src/script.js"></script>
+  <!-- Your app -->
+  <script src="src/script.js" defer></script>
 </head>
 
 <body>
