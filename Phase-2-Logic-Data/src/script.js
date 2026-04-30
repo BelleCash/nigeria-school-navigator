@@ -1,27 +1,42 @@
+js
 // =========================
-// SUPABASE INIT (FIXED)
+// CONFIGURATION (UPDATED WITH YOUR NEW KEY)
 // =========================
 const supabaseUrl = "https://rjqrdgdcnotxrwpvhxzp.supabase.co"
-
-const supabaseKey =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqcXJkZ2Rjbm90eHJ3cHZoeHpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjkxMzgsImV4cCI6MjA5MzA0NTEzOH0.hbVnC_GVOPZlFbnqCwOk_iPHa5UkcOYH5ZLfY0D_kvw";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqcXJkZ2Rjbm90eHJ3cHZoeHpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NjkxMzgsImV4cCI6MjA5MzA0NTEzOH0.hbVnC_GVOPZlFbnqCwOk_iPHa5UkcOYH5ZLfY0D_kvw"
 
 let supabase;
 
-// =========================
-// INIT
-// =========================
 document.addEventListener("DOMContentLoaded", () => {
-  if (!window.supabase) {
-    console.error("Supabase CDN not loaded");
-    return;
-  }
-
-  supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-  init();
+    if (window.supabase) {
+        supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        initApp(); // Start your app functions here
+    } else {
+        console.error("Supabase CDN failed to load.");
+    }
 });
 
+// =========================
+// NORMALIZE (Fixed for your actual data keys)
+// =========================
+function normalize(s) {
+  // Extracting ownership type from the object I saw in your DB
+  const ownershipType = s.ownership?.type || "Public";
+  
+  // Extracting education level from your boolean flags
+  let level = "Primary";
+  if (s.education_levels?.secondary?.junior_secondary || s.education_levels?.secondary?.senior_secondary) level = "Secondary";
+  if (s.education_levels?.tertiary && Object.values(s.education_levels.tertiary).some(v => v)) level = "Tertiary";
+
+  return {
+    school_name: s.school_name || "Unnamed School",
+    location: s.location || `${s.lga}, ${s.state}`,
+    address: s.address || "",
+    level: level,
+    ownership: ownershipType.charAt(0).toUpperCase() + ownershipType.slice(1),
+    mode: s.delivery_mode || "Day"
+  }
+}
 // =========================
 // DOM ELEMENTS
 // =========================
