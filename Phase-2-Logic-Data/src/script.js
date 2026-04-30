@@ -1,100 +1,100 @@
-// src/script.js
+const supabaseUrl = "https://rjqrdgdcnotxrwpvhxzp.supabase.co"
+const supabaseKey = "sb_publishable_gA0zVRQ7iYAWekG3BDrDiQ_uBcDYRe7"
 
-import { nigeriaData } from "./data/nigeriaData.js";
-import { filterSchools } from "./logic/filter.js";
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-// =========================
-// DOM ELEMENTS
-// =========================
-const form = document.querySelector("#searchForm");
-const searchInput = document.querySelector("#searchInput");
-const stateFilter = document.querySelector("#stateFilter");
-const typeFilter = document.querySelector("#typeFilter");
-const grid = document.querySelector("#resultsGrid");
-const emptyState = document.querySelector("#emptyState");
-const resultCount = document.querySelector("#resultCount");
+// DOM
+const form = document.querySelector("#searchForm")
+const searchInput = document.querySelector("#searchInput")
+const stateFilter = document.querySelector("#stateFilter")
+const typeFilter = document.querySelector("#typeFilter")
+const grid = document.querySelector("#resultsGrid")
+const emptyState = document.querySelector("#emptyState")
+const resultCount = document.querySelector("#resultCount")
 
 // =========================
-// RENDER FUNCTION
+// FETCH FROM SUPABASE
 // =========================
-/**
- * Paints the school cards into the grid based on the provided array.
- */
-function renderSchools(schools) {
-    // Clear current grid
-    grid.innerHTML = "";
+async function fetchSchools() {
+  let query = supabase.from("nigeria_data").select("*").limit(50)
 
-    // Update Result Count
-    resultCount.textContent = `${schools.length} schools found`;
+  // SEARCH FILTER
+  if (searchInput.value) {
+    query = query.ilike("school_name", `%${searchInput.value}%`)
+  }
 
-    // Handle Empty State
-    if (schools.length === 0) {
-        emptyState.classList.remove("hidden");
-        return;
-    }
+  // STATE FILTER
+  if (stateFilter.value) {
+    query = query.eq("state", stateFilter.value)
+  }
 
-    emptyState.classList.add("hidden");
+  const { data, error } = await query
 
-    // Paint Cards
-    schools.forEach((school) => {
-        const card = document.createElement("div");
-        card.className = "school-card";
+  if (error) {
+    console.error("Error fetching:", error)
+    return
+  }
 
-        // Using Template Literals for clean, readable HTML injection
-        card.innerHTML = `
-            <div class="card-header">
-                <h2 class="school-name">${school.school_name}</h2>
-                <span class="tag">${school.education_level}</span>
-            </div>
-            <div class="card-body">
-                <p class="location"><strong>Location:</strong> ${school.lga}, ${school.state}</p>
-                <p class="address">${school.address}</p>
-                <div class="meta-info">
-                    <span class="type-badge">${school.school_type}</span>
-                    <span class="ownership-badge">${school.ownership_type}</span>
-                </div>
-            </div>
-        `;
-
-        grid.appendChild(card);
-    });
+  renderSchools(data)
 }
 
 // =========================
-// FILTER LOGIC ENGINE
+// RENDER
 // =========================
-/**
- * Gathers current filter values and runs the filter logic.
- */
-const updateUI = () => {
-    const filters = {
-        query: searchInput.value.trim(),
-        state: stateFilter.value,
-        level: typeFilter.value,
-        ownership: null // Placeholder for future features
-    };
+function renderSchools(schools) {
+  grid.innerHTML = ""
 
-    const filteredData = filterSchools(nigeriaData, filters);
-    renderSchools(filteredData);
-};
+  resultCount.textContent = `${schools.length} schools found`
+
+  if (!schools || schools.length === 0) {
+    emptyState.classList.remove("hidden")
+    return
+  }
+
+  emptyState.classList.add("hidden")
+
+  schools.forEach((school) => {
+    const card = document.createElement("div")
+    card.className = "school-card"
+
+    card.innerHTML = `
+      <div class="card-header">
+        <h2 class="school-name">${school.school_name || "No name"}</h2>
+        <span class="tag">
+          ${school.education_levels?.primary ? "Primary" :
+            school.education_levels?.secondary ? "Secondary" :
+            "Tertiary"}
+        </span>
+      </div>
+
+      <div class="card-body">
+        <p><strong>Location:</strong> ${school.lga || "N/A"}, ${school.state || "N/A"}</p>
+        <p>${school.address || ""}</p>
+
+        <div class="meta-info">
+          <span class="type-badge">${school.delivery_mode || "Unknown"}</span>
+          <span class="ownership-badge">${school.ownership?.type || "Unknown"}</span>
+        </div>
+      </div>
+    `
+
+    grid.appendChild(card)
+  })
+}
 
 // =========================
-// EVENT LISTENERS
+// EVENTS
 // =========================
-
-// 1. Real-time filtering (Snappy UX)
-searchInput.addEventListener("input", updateUI);
-stateFilter.addEventListener("change", updateUI);
-typeFilter.addEventListener("change", updateUI);
-
-// 2. Form Submit (Prevents page reload if user hits Enter)
 form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    updateUI();
-});
+  e.preventDefault()
+  fetchSchools()
+})
+
+searchInput.addEventListener("input", fetchSchools)
+stateFilter.addEventListener("change", fetchSchools)
+typeFilter.addEventListener("change", fetchSchools)
 
 // =========================
 // INITIAL LOAD
 // =========================
-// Load all schools immediately when the page opens
-renderSchools(nigeriaData);
+fetchSchools()
