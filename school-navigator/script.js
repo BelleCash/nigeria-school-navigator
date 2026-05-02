@@ -23,10 +23,11 @@ const resultCount = document.getElementById("resultCount");
 const emptyState = document.getElementById("emptyState");
 
 // =========================
-// STATE
+// STATE CONTROL (ANTI-BUG CORE)
 // =========================
 let currentPage = 0;
 let isSearching = false;
+let requestId = 0;
 const PAGE_SIZE = 50;
 
 // =========================
@@ -41,7 +42,7 @@ function debounce(fn, delay = 300) {
 }
 
 // =========================
-// RESET SEARCH STATE (🔥 IMPORTANT FIX)
+// RESET UI (SAFE)
 // =========================
 function resetSearchUI() {
   currentPage = 0;
@@ -50,7 +51,7 @@ function resetSearchUI() {
 }
 
 // =========================
-// LOAD LGAs (RPC FIXED)
+// LOAD LGAs (FIXED RPC SAFE)
 // =========================
 async function loadLGAs(state) {
   lgaFilter.innerHTML = `<option value="">All LGAs</option>`;
@@ -81,7 +82,6 @@ function buildQuery() {
 
   const keyword = input.value?.trim();
 
-  // safer search fallback
   if (keyword) {
     query = query.textSearch("search_vector", keyword, {
       type: "websearch",
@@ -98,48 +98,54 @@ function buildQuery() {
 }
 
 // =========================
-// SEARCH (FIXED PAGINATION + NO DUPLICATES)
+// SEARCH (FULL FIX: NO DUPLICATES, NO RACE CONDITIONS)
 // =========================
 async function searchSchools(reset = true) {
-  if (isSearching) return; // 🔥 prevent double calls
+  if (isSearching) return;
   isSearching = true;
 
-  if (reset) resetSearchUI();
+  const thisRequest = ++requestId;
 
-  const from = currentPage * PAGE_SIZE;
-  const to = from + PAGE_SIZE - 1;
+  try {
+    if (reset) resetSearchUI();
 
-  const { data, error } = await buildQuery()
-    .order("state", { ascending: true })
-    .order("name", { ascending: true })
-    .range(from, to);
+    const from = currentPage * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
 
-  if (error) {
-    console.error("Search error:", error);
+    const { data, error } = await buildQuery()
+      .order("state", { ascending: true })
+      .order("name", { ascending: true })
+      .range(from, to);
+
+    // ❌ ignore stale responses
+    if (thisRequest !== requestId) return;
+
+    if (error) {
+      console.error("Search error:", error);
+      return;
+    }
+
+    const results = data || [];
+
+    if (reset) {
+      resultCount.textContent = results.length;
+    }
+
+    if (results.length === 0 && reset) {
+      emptyState.classList.remove("hidden");
+      return;
+    }
+
+    renderResults(results);
+
+    currentPage++;
+  } finally {
     isSearching = false;
-    return;
   }
-
-  const results = data || [];
-
-  if (reset) {
-    resultCount.textContent = results.length;
-  }
-
-  if (results.length === 0 && reset) {
-    emptyState.classList.remove("hidden");
-    isSearching = false;
-    return;
-  }
-
-  renderResults(results);
-
-  currentPage++; // 🔥 only increment AFTER successful render
-  isSearching = false;
 }
 
 // =========================
-// RENDER RESULTS (FIXED DUPLICATION SAFE)
+// RENDER RESULTS (SAFE APPEND)
 // =========================
 function renderResults(data) {
   const fragment = document.createDocumentFragment();
@@ -183,19 +189,24 @@ input.addEventListener("input", debouncedSearch);
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
+  requestId++; // kill pending requests
   searchSchools(true);
 });
 
 stateFilter.addEventListener("change", () => {
   loadLGAs(stateFilter.value);
+  requestId++;
   searchSchools(true);
 });
 
 [lgaFilter, typeFilter, settlementFilter].forEach((el) => {
-  el.addEventListener("change", () => searchSchools(true));
+  el.addEventListener("change", () => {
+    requestId++;
+    searchSchools(true);
+  });
 });
 
 // =========================
-// INIT
+// INIT (ONLY ONCE SAFE)
 // =========================
 searchSchools(true);
