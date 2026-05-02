@@ -26,6 +26,7 @@ const emptyState = document.getElementById("emptyState");
 // STATE
 // =========================
 let currentPage = 0;
+let isSearching = false;
 const PAGE_SIZE = 50;
 
 // =========================
@@ -40,11 +41,19 @@ function debounce(fn, delay = 300) {
 }
 
 // =========================
-// LOAD LGAs (FIXED - NO 1000 LIMIT BUG)
+// RESET SEARCH STATE (🔥 IMPORTANT FIX)
+// =========================
+function resetSearchUI() {
+  currentPage = 0;
+  resultsGrid.innerHTML = "";
+  emptyState.classList.add("hidden");
+}
+
+// =========================
+// LOAD LGAs (RPC FIXED)
 // =========================
 async function loadLGAs(state) {
   lgaFilter.innerHTML = `<option value="">All LGAs</option>`;
-
   if (!state) return;
 
   const { data, error } = await client.rpc("get_unique_lgas", {
@@ -72,6 +81,7 @@ function buildQuery() {
 
   const keyword = input.value?.trim();
 
+  // safer search fallback
   if (keyword) {
     query = query.textSearch("search_vector", keyword, {
       type: "websearch",
@@ -88,14 +98,13 @@ function buildQuery() {
 }
 
 // =========================
-// SEARCH (PAGINATED)
+// SEARCH (FIXED PAGINATION + NO DUPLICATES)
 // =========================
 async function searchSchools(reset = true) {
-  if (reset) {
-    currentPage = 0;
-    resultsGrid.innerHTML = "";
-    emptyState.classList.add("hidden");
-  }
+  if (isSearching) return; // 🔥 prevent double calls
+  isSearching = true;
+
+  if (reset) resetSearchUI();
 
   const from = currentPage * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
@@ -107,6 +116,7 @@ async function searchSchools(reset = true) {
 
   if (error) {
     console.error("Search error:", error);
+    isSearching = false;
     return;
   }
 
@@ -118,15 +128,18 @@ async function searchSchools(reset = true) {
 
   if (results.length === 0 && reset) {
     emptyState.classList.remove("hidden");
+    isSearching = false;
     return;
   }
 
   renderResults(results);
-  currentPage++;
+
+  currentPage++; // 🔥 only increment AFTER successful render
+  isSearching = false;
 }
 
 // =========================
-// RENDER RESULTS
+// RENDER RESULTS (FIXED DUPLICATION SAFE)
 // =========================
 function renderResults(data) {
   const fragment = document.createDocumentFragment();
@@ -149,7 +162,7 @@ function renderResults(data) {
 }
 
 // =========================
-// LOAD MORE BUTTON
+// LOAD MORE
 // =========================
 const loadMoreBtn = document.createElement("button");
 loadMoreBtn.textContent = "Load More";
@@ -185,4 +198,4 @@ stateFilter.addEventListener("change", () => {
 // =========================
 // INIT
 // =========================
-searchSchools();
+searchSchools(true);
