@@ -50,7 +50,7 @@ function resetSearchUI() {
 }
 
 // =========================
-// REMOVE DUPLICATES (IMPORTANT FIX)
+// REMOVE DUPLICATES
 // =========================
 function uniqueById(data) {
   const seen = new Set();
@@ -110,7 +110,7 @@ function buildQuery() {
 }
 
 // =========================
-// SEARCH (FULL FIX)
+// SEARCH (FULLY FIXED)
 // =========================
 async function searchSchools(reset = true) {
   if (isSearching) return;
@@ -132,7 +132,7 @@ async function searchSchools(reset = true) {
     return;
   }
 
-  const results = uniqueById(data); // 🔥 CRITICAL FIX
+  const results = uniqueById(data || []);
 
   if (reset) {
     resultCount.textContent = results.length;
@@ -151,7 +151,7 @@ async function searchSchools(reset = true) {
 }
 
 // =========================
-// RENDER RESULTS (NO DUPLICATES DOM SAFE)
+// RENDER RESULTS (AI TAGS RESTORED)
 // =========================
 function renderResults(data) {
   const fragment = document.createDocumentFragment();
@@ -173,6 +173,14 @@ function renderResults(data) {
       <div class="location">${school.state ?? ""} • ${school.lga ?? ""}</div>
       <div><b>Level:</b> ${school.level ?? "N/A"}</div>
       <div><b>Type:</b> ${school.settlement_type ?? "N/A"}</div>
+
+      <div class="tags">
+        ${
+          Array.isArray(school.ai_tags)
+            ? school.ai_tags.map(tag => `<span class="tag">${tag}</span>`).join("")
+            : ""
+        }
+      </div>
     `;
 
     fragment.appendChild(card);
