@@ -39,31 +39,7 @@ function debounce(fn, delay = 300) {
 }
 
 // =========================
-// LOAD STATES
-// =========================
-async function loadStates() {
-  const { data, error } = await client
-    .from("schools")
-    .select("state");
-
-  if (error) return console.error(error);
-
-  const uniqueStates = [
-    ...new Set(data.map(s => s.state).filter(Boolean))
-  ].sort();
-
-  stateFilter.innerHTML = `<option value="">All States</option>`;
-
-  uniqueStates.forEach(state => {
-    const opt = document.createElement("option");
-    opt.value = state;
-    opt.textContent = state;
-    stateFilter.appendChild(opt);
-  });
-}
-
-// =========================
-// LOAD LGAs
+// LOAD LGAs (FIXED)
 // =========================
 async function loadLGAs(state) {
   lgaFilter.innerHTML = `<option value="">All LGAs</option>`;
@@ -73,12 +49,15 @@ async function loadLGAs(state) {
   const { data, error } = await client
     .from("schools")
     .select("lga")
-    .ilike("state", state);
+    .eq("state", state); // ✅ FIXED
 
-  if (error) return console.error(error);
+  if (error) {
+    console.error("LGA load error:", error);
+    return;
+  }
 
   const uniqueLGAs = [
-    ...new Set(data.map(l => l.lga).filter(Boolean))
+    ...new Set((data || []).map(l => l.lga).filter(Boolean))
   ].sort();
 
   uniqueLGAs.forEach(lga => {
@@ -90,7 +69,7 @@ async function loadLGAs(state) {
 }
 
 // =========================
-// BUILD QUERY
+// BUILD QUERY (FIXED)
 // =========================
 function buildQuery() {
   let query = client.from("schools").select("*");
@@ -102,19 +81,19 @@ function buildQuery() {
   }
 
   if (stateFilter.value) {
-    query = query.ilike("state", stateFilter.value);
+    query = query.eq("state", stateFilter.value); // ✅ FIXED
   }
 
   if (lgaFilter.value) {
-    query = query.ilike("lga", lgaFilter.value);
+    query = query.eq("lga", lgaFilter.value); // ✅ FIXED
   }
 
   if (typeFilter.value) {
-    query = query.ilike("level", typeFilter.value);
+    query = query.eq("level", typeFilter.value); // ✅ FIXED
   }
 
   if (settlementFilter.value) {
-    query = query.ilike("settlement_type", settlementFilter.value);
+    query = query.eq("settlement_type", settlementFilter.value); // ✅ FIXED
   }
 
   return query;
@@ -133,9 +112,7 @@ async function searchSchools(reset = true) {
   const from = currentPage * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
-  let query = buildQuery().range(from, to);
-
-  const { data, error } = await query;
+  const { data, error } = await buildQuery().range(from, to);
 
   if (error) {
     console.error("Search error:", error);
@@ -175,9 +152,10 @@ function renderResults(data, reset) {
       <div><b>Level:</b> ${school.level ?? "N/A"}</div>
       <div><b>Type:</b> ${school.settlement_type ?? "N/A"}</div>
       <div class="tags">
-        ${Array.isArray(school.ai_tags)
-          ? school.ai_tags.map(tag => `<span class="tag">${tag}</span>`).join("")
-          : ""
+        ${
+          Array.isArray(school.ai_tags)
+            ? school.ai_tags.map(tag => `<span class="tag">${tag}</span>`).join("")
+            : ""
         }
       </div>
     `;
@@ -226,5 +204,4 @@ stateFilter.addEventListener("change", () => {
 // =========================
 // INIT
 // =========================
-loadStates();
 searchSchools();
