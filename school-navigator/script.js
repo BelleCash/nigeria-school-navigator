@@ -1,9 +1,8 @@
-
 // =========================
 // SUPABASE INIT
 // =========================
 const SUPABASE_URL = "https://ulqsavnzjzvxqcihsmmv.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVscXNhdm56anp2eHFjaWhzbW12Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NTAwNTgsImV4cCI6MjA5MzEyNjA1OH0.hou0zP6NyY9F9ZlrZIh82_CanIrmzveFaea4aka4gtA";
+const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE";
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -23,6 +22,12 @@ const resultCount = document.getElementById("resultCount");
 const emptyState = document.getElementById("emptyState");
 
 // =========================
+// STATE
+// =========================
+let currentPage = 0;
+const PAGE_SIZE = 50;
+
+// =========================
 // UTIL: DEBOUNCE
 // =========================
 function debounce(fn, delay = 300) {
@@ -34,19 +39,14 @@ function debounce(fn, delay = 300) {
 }
 
 // =========================
-// LOAD STATES (FIXED: DISTINCT QUERY)
+// LOAD STATES
 // =========================
 async function loadStates() {
   const { data, error } = await client
     .from("schools")
     .select("state");
 
-  if (error) {
-    console.error("State load error:", error);
-    return;
-  }
-
-  if (!data) return;
+  if (error) return console.error(error);
 
   const uniqueStates = [
     ...new Set(data.map(s => s.state).filter(Boolean))
@@ -63,7 +63,7 @@ async function loadStates() {
 }
 
 // =========================
-// LOAD LGAs (SAFE VERSION)
+// LOAD LGAs
 // =========================
 async function loadLGAs(state) {
   lgaFilter.innerHTML = `<option value="">All LGAs</option>`;
@@ -73,14 +73,9 @@ async function loadLGAs(state) {
   const { data, error } = await client
     .from("schools")
     .select("lga")
-    .eq("state", state);
+    .ilike("state", state);
 
-  if (error) {
-    console.error("LGA load error:", error);
-    return;
-  }
-
-  if (!data) return;
+  if (error) return console.error(error);
 
   const uniqueLGAs = [
     ...new Set(data.map(l => l.lga).filter(Boolean))
@@ -95,14 +90,10 @@ async function loadLGAs(state) {
 }
 
 // =========================
-// SEARCH FUNCTION (OPTIMIZED)
+// BUILD QUERY
 // =========================
-async function searchSchools() {
-
-  let query = client
-    .from("schools")
-    .select("*")
-    .limit(50);
+function buildQuery() {
+  let query = client.from("schools").select("*");
 
   const keyword = input.value?.trim();
 
@@ -111,20 +102,38 @@ async function searchSchools() {
   }
 
   if (stateFilter.value) {
-    query = query.eq("state", stateFilter.value);
+    query = query.ilike("state", stateFilter.value);
   }
 
   if (lgaFilter.value) {
-    query = query.eq("lga", lgaFilter.value);
+    query = query.ilike("lga", lgaFilter.value);
   }
 
   if (typeFilter.value) {
-    query = query.eq("level", typeFilter.value);
+    query = query.ilike("level", typeFilter.value);
   }
 
   if (settlementFilter.value) {
-    query = query.eq("settlement_type", settlementFilter.value);
+    query = query.ilike("settlement_type", settlementFilter.value);
   }
+
+  return query;
+}
+
+// =========================
+// SEARCH (WITH PAGINATION)
+// =========================
+async function searchSchools(reset = true) {
+
+  if (reset) {
+    currentPage = 0;
+    resultsGrid.innerHTML = "";
+  }
+
+  const from = currentPage * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
+  let query = buildQuery().range(from, to);
 
   const { data, error } = await query;
 
@@ -133,18 +142,21 @@ async function searchSchools() {
     return;
   }
 
-  renderResults(data || []);
+  renderResults(data || [], reset);
+
+  currentPage++;
 }
 
 // =========================
-// RENDER RESULTS (SAFE + FAST)
+// RENDER RESULTS
 // =========================
-function renderResults(data) {
+function renderResults(data, reset) {
 
-  resultsGrid.innerHTML = "";
-  resultCount.textContent = data.length;
+  if (reset) {
+    resultCount.textContent = data.length;
+  }
 
-  if (!data.length) {
+  if (!data.length && reset) {
     emptyState.classList.remove("hidden");
     return;
   }
@@ -158,11 +170,16 @@ function renderResults(data) {
     card.className = "school-card";
 
     card.innerHTML = `
-      <h3>${school.name ?? "Unnamed School"}</h3>
-      <p>${school.state ?? ""} • ${school.lga ?? ""}</p>
-      <p><b>Level:</b> ${school.level ?? "N/A"}</p>
-      <p><b>Type:</b> ${school.settlement_type ?? "N/A"}</p>
-      <small>${Array.isArray(school.ai_tags) ? school.ai_tags.join(", ") : ""}</small>
+      <div class="school-name">${school.name ?? "Unnamed School"}</div>
+      <div class="location">${school.state ?? ""} • ${school.lga ?? ""}</div>
+      <div><b>Level:</b> ${school.level ?? "N/A"}</div>
+      <div><b>Type:</b> ${school.settlement_type ?? "N/A"}</div>
+      <div class="tags">
+        ${Array.isArray(school.ai_tags)
+          ? school.ai_tags.map(tag => `<span class="tag">${tag}</span>`).join("")
+          : ""
+        }
+      </div>
     `;
 
     fragment.appendChild(card);
@@ -172,24 +189,38 @@ function renderResults(data) {
 }
 
 // =========================
+// LOAD MORE BUTTON
+// =========================
+const loadMoreBtn = document.createElement("button");
+loadMoreBtn.textContent = "Load More";
+loadMoreBtn.style.margin = "20px auto";
+loadMoreBtn.style.display = "block";
+
+loadMoreBtn.addEventListener("click", () => {
+  searchSchools(false);
+});
+
+document.querySelector(".results-section").appendChild(loadMoreBtn);
+
+// =========================
 // EVENTS
 // =========================
-const debouncedSearch = debounce(searchSchools, 300);
-
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-  searchSchools();
-});
+const debouncedSearch = debounce(() => searchSchools(true), 300);
 
 input.addEventListener("input", debouncedSearch);
 
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  searchSchools(true);
+});
+
 stateFilter.addEventListener("change", () => {
   loadLGAs(stateFilter.value);
-  searchSchools();
+  searchSchools(true);
 });
 
 [lgaFilter, typeFilter, settlementFilter].forEach(el => {
-  el.addEventListener("change", searchSchools);
+  el.addEventListener("change", () => searchSchools(true));
 });
 
 // =========================
