@@ -2,7 +2,8 @@
 // SUPABASE INIT
 // =========================
 const SUPABASE_URL = "https://ulqsavnzjzvxqcihsmmv.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVscXNhdm56anp2eHFjaWhzbW12Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NTAwNTgsImV4cCI6MjA5MzEyNjA1OH0.hou0zP6NyY9F9ZlrZIh82_CanIrmzveFaea4aka4gtA";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVscXNhdm56anp2eHFjaWhzbW12Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NTAwNTgsImV4cCI6MjA5MzEyNjA1OH0.hou0zP6NyY9F9ZlrZIh82_CanIrmzveFaea4aka4gtA";
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -28,7 +29,7 @@ let currentPage = 0;
 const PAGE_SIZE = 50;
 
 // =========================
-// UTIL: DEBOUNCE
+// DEBOUNCE
 // =========================
 function debounce(fn, delay = 300) {
   let timeout;
@@ -39,7 +40,7 @@ function debounce(fn, delay = 300) {
 }
 
 // =========================
-// LOAD LGAs (FIXED)
+// LOAD LGAs
 // =========================
 async function loadLGAs(state) {
   lgaFilter.innerHTML = `<option value="">All LGAs</option>`;
@@ -49,7 +50,7 @@ async function loadLGAs(state) {
   const { data, error } = await client
     .from("schools")
     .select("lga")
-    .eq("state", state); // ✅ FIXED
+    .eq("state", state);
 
   if (error) {
     console.error("LGA load error:", error);
@@ -69,41 +70,48 @@ async function loadLGAs(state) {
 }
 
 // =========================
-// BUILD QUERY (FIXED)
+// BUILD QUERY (FULL SEARCH ENGINE)
 // =========================
 function buildQuery() {
-  let query = client.from("schools").select("*");
-
   const keyword = input.value?.trim();
 
+  let query = client.from("schools").select("*");
+
+  // =========================
+  // FULL-TEXT SEARCH (PRIMARY)
+  // =========================
   if (keyword) {
-    query = query.ilike("name", `%${keyword}%`);
+    query = query.textSearch("search_vector", keyword, {
+      type: "websearch"
+    });
   }
 
+  // =========================
+  // FILTERS
+  // =========================
   if (stateFilter.value) {
-    query = query.eq("state", stateFilter.value); // ✅ FIXED
+    query = query.eq("state", stateFilter.value);
   }
 
   if (lgaFilter.value) {
-    query = query.eq("lga", lgaFilter.value); // ✅ FIXED
+    query = query.eq("lga", lgaFilter.value);
   }
 
   if (typeFilter.value) {
-    query = query.eq("level", typeFilter.value); // ✅ FIXED
+    query = query.eq("level", typeFilter.value);
   }
 
   if (settlementFilter.value) {
-    query = query.eq("settlement_type", settlementFilter.value); // ✅ FIXED
+    query = query.eq("settlement_type", settlementFilter.value);
   }
 
   return query;
 }
 
 // =========================
-// SEARCH (WITH PAGINATION)
+// SEARCH (PAGINATED)
 // =========================
 async function searchSchools(reset = true) {
-
   if (reset) {
     currentPage = 0;
     resultsGrid.innerHTML = "";
@@ -112,7 +120,9 @@ async function searchSchools(reset = true) {
   const from = currentPage * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
-  const { data, error } = await buildQuery().range(from, to);
+  const { data, error } = await buildQuery()
+    .order("name", { ascending: true })
+    .range(from, to);
 
   if (error) {
     console.error("Search error:", error);
@@ -128,7 +138,6 @@ async function searchSchools(reset = true) {
 // RENDER RESULTS
 // =========================
 function renderResults(data, reset) {
-
   if (reset) {
     resultCount.textContent = data.length;
   }
