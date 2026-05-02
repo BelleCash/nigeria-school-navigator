@@ -29,6 +29,19 @@ let currentPage = 0;
 let isSearching = false;
 const PAGE_SIZE = 50;
 
+// prevent duplicate rendering
+const renderedIds = new Set();
+
+// =========================
+// RESET
+// =========================
+function resetSearchUI() {
+  currentPage = 0;
+  resultsGrid.innerHTML = "";
+  renderedIds.clear();
+  emptyState.classList.add("hidden");
+}
+
 // =========================
 // DEBOUNCE
 // =========================
@@ -41,29 +54,7 @@ function debounce(fn, delay = 300) {
 }
 
 // =========================
-// RESET UI
-// =========================
-function resetSearchUI() {
-  currentPage = 0;
-  resultsGrid.innerHTML = "";
-  emptyState.classList.add("hidden");
-}
-
-// =========================
-// REMOVE DUPLICATES
-// =========================
-function uniqueById(data) {
-  const seen = new Set();
-  return (data || []).filter(item => {
-    if (!item?.id) return true;
-    if (seen.has(item.id)) return false;
-    seen.add(item.id);
-    return true;
-  });
-}
-
-// =========================
-// LOAD LGAs (RPC FIXED)
+// LOAD LGAs (FIXED)
 // =========================
 async function loadLGAs(state) {
   lgaFilter.innerHTML = `<option value="">All LGAs</option>`;
@@ -74,7 +65,7 @@ async function loadLGAs(state) {
   });
 
   if (error) {
-    console.error("LGA load error:", error);
+    console.error(error);
     return;
   }
 
@@ -87,7 +78,7 @@ async function loadLGAs(state) {
 }
 
 // =========================
-// BUILD QUERY
+// QUERY BUILDER (FIXED ORDERING)
 // =========================
 function buildQuery() {
   let query = client.from("schools").select("*");
@@ -110,70 +101,62 @@ function buildQuery() {
 }
 
 // =========================
-// SEARCH (FULLY FIXED)
+// SEARCH (FULL FIX)
 // =========================
 async function searchSchools(reset = true) {
   if (isSearching) return;
   isSearching = true;
 
-  if (reset) resetSearchUI();
+  try {
+    if (reset) resetSearchUI();
 
-  const from = currentPage * PAGE_SIZE;
-  const to = from + PAGE_SIZE - 1;
+    const from = currentPage * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
 
-  const { data, error } = await buildQuery()
-    .order("state", { ascending: true })
-    .order("name", { ascending: true })
-    .range(from, to);
+    const { data, error } = await buildQuery()
+      // 🔥 CRITICAL FIX: stable unique ordering
+      .order("id", { ascending: true })
+      .range(from, to);
 
-  if (error) {
-    console.error("Search error:", error);
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    const results = data || [];
+
+    if (results.length === 0 && reset) {
+      emptyState.classList.remove("hidden");
+      return;
+    }
+
+    renderResults(results);
+
+    currentPage++;
+  } finally {
     isSearching = false;
-    return;
   }
-
-  const results = uniqueById(data || []);
-
-  if (reset) {
-    resultCount.textContent = results.length;
-  }
-
-  if (results.length === 0 && reset) {
-    emptyState.classList.remove("hidden");
-    isSearching = false;
-    return;
-  }
-
-  renderResults(results);
-
-  currentPage++;
-  isSearching = false;
 }
 
 // =========================
-// RENDER RESULTS (AI TAGS RESTORED)
+// RENDER (DEDUP FIX)
 // =========================
 function renderResults(data) {
   const fragment = document.createDocumentFragment();
 
-  const existingIds = new Set(
-    Array.from(resultsGrid.querySelectorAll(".school-card"))
-      .map(el => el.getAttribute("data-id"))
-  );
-
   data.forEach((school) => {
-    if (school.id && existingIds.has(String(school.id))) return;
+    // 🔥 HARD DEDUPE
+    if (renderedIds.has(school.id)) return;
+    renderedIds.add(school.id);
 
     const card = document.createElement("div");
     card.className = "school-card";
-    card.setAttribute("data-id", school.id || "");
 
     card.innerHTML = `
       <div class="school-name">${school.name ?? "Unnamed School"}</div>
       <div class="location">${school.state ?? ""} • ${school.lga ?? ""}</div>
       <div><b>Level:</b> ${school.level ?? "N/A"}</div>
       <div><b>Type:</b> ${school.settlement_type ?? "N/A"}</div>
-
       <div class="tags">
         ${
           Array.isArray(school.ai_tags)
@@ -190,24 +173,20 @@ function renderResults(data) {
 }
 
 // =========================
-// LOAD MORE BUTTON
+// LOAD MORE
 // =========================
 const loadMoreBtn = document.createElement("button");
 loadMoreBtn.textContent = "Load More";
 loadMoreBtn.className = "load-more";
 
-loadMoreBtn.addEventListener("click", () => {
-  searchSchools(false);
-});
+loadMoreBtn.onclick = () => searchSchools(false);
 
 document.querySelector(".results-section").appendChild(loadMoreBtn);
 
 // =========================
 // EVENTS
 // =========================
-const debouncedSearch = debounce(() => searchSchools(true), 300);
-
-input.addEventListener("input", debouncedSearch);
+input.addEventListener("input", debounce(() => searchSchools(true), 300));
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
