@@ -40,29 +40,26 @@ function debounce(fn, delay = 300) {
 }
 
 // =========================
-// LOAD LGAs
+// LOAD LGAs (FIXED - NO 1000 LIMIT BUG)
 // =========================
 async function loadLGAs(state) {
   lgaFilter.innerHTML = `<option value="">All LGAs</option>`;
 
   if (!state) return;
 
-  const { data, error } = await client
-    .from("schools")
-    .select("lga")
-    .eq("state", state);
+  const { data, error } = await client.rpc("get_unique_lgas", {
+    selected_state: state,
+  });
 
   if (error) {
     console.error("LGA load error:", error);
     return;
   }
 
-  const uniqueLGAs = [...new Set((data || []).map(l => l.lga).filter(Boolean))].sort();
-
-  uniqueLGAs.forEach(lga => {
+  (data || []).forEach((item) => {
     const opt = document.createElement("option");
-    opt.value = lga;
-    opt.textContent = lga;
+    opt.value = item.lga;
+    opt.textContent = item.lga;
     lgaFilter.appendChild(opt);
   });
 }
@@ -75,23 +72,23 @@ function buildQuery() {
 
   const keyword = input.value?.trim();
 
-  // Full text search (safe fallback)
   if (keyword) {
     query = query.textSearch("search_vector", keyword, {
-      type: "websearch"
+      type: "websearch",
     });
   }
 
   if (stateFilter.value) query = query.eq("state", stateFilter.value);
   if (lgaFilter.value) query = query.eq("lga", lgaFilter.value);
   if (typeFilter.value) query = query.eq("level", typeFilter.value);
-  if (settlementFilter.value) query = query.eq("settlement_type", settlementFilter.value);
+  if (settlementFilter.value)
+    query = query.eq("settlement_type", settlementFilter.value);
 
   return query;
 }
 
 // =========================
-// SEARCH (PAGINATED + STABLE SORT)
+// SEARCH (PAGINATED)
 // =========================
 async function searchSchools(reset = true) {
   if (reset) {
@@ -104,8 +101,8 @@ async function searchSchools(reset = true) {
   const to = from + PAGE_SIZE - 1;
 
   const { data, error } = await buildQuery()
-    .order("state", { ascending: true })   // stable sorting
-    .order("name", { ascending: true })    // secondary sorting
+    .order("state", { ascending: true })
+    .order("name", { ascending: true })
     .range(from, to);
 
   if (error) {
@@ -125,7 +122,6 @@ async function searchSchools(reset = true) {
   }
 
   renderResults(results);
-
   currentPage++;
 }
 
@@ -135,7 +131,7 @@ async function searchSchools(reset = true) {
 function renderResults(data) {
   const fragment = document.createDocumentFragment();
 
-  data.forEach(school => {
+  data.forEach((school) => {
     const card = document.createElement("div");
     card.className = "school-card";
 
@@ -144,13 +140,6 @@ function renderResults(data) {
       <div class="location">${school.state ?? ""} • ${school.lga ?? ""}</div>
       <div><b>Level:</b> ${school.level ?? "N/A"}</div>
       <div><b>Type:</b> ${school.settlement_type ?? "N/A"}</div>
-      <div class="tags">
-        ${
-          Array.isArray(school.ai_tags)
-            ? school.ai_tags.map(tag => `<span class="tag">${tag}</span>`).join("")
-            : ""
-        }
-      </div>
     `;
 
     fragment.appendChild(card);
@@ -189,7 +178,7 @@ stateFilter.addEventListener("change", () => {
   searchSchools(true);
 });
 
-[lgaFilter, typeFilter, settlementFilter].forEach(el => {
+[lgaFilter, typeFilter, settlementFilter].forEach((el) => {
   el.addEventListener("change", () => searchSchools(true));
 });
 
