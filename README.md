@@ -79,10 +79,130 @@ Today, I transitioned the project from a static list to an interactive tool by:
 * **A11y (Accessibility) Integration:** Implemented the `<label for="">` pattern across all form inputs to ensure screen-reader compatibility and increase clickable touch targets for mobile users.
 * **Form Logic:** Built complex input groups using `<fieldset>` and `<legend>` for better semantic grouping of school data.
 
-Development (Coming in Week 3)
-Once the React framework is initialized:
-npm install
-npm run dev
+## 📅 Day 8 — Frontend Stabilization & Search Engine Integration
+
+Today marked a major transition from basic UI development to a fully functional, database-powered search system.
+
+---
+
+## 🚀 Key Achievements
+
+### 🏗 Project Structure Finalized
+Reorganized the project into a clean, production-ready layout:
+
+- `index.html` (entry point)
+- `style.css`
+- `script.js`
+- `/assets` (images)
+- `/data` (CSV + reports)
+- `/docs` (legal pages)
+
+This ensures:
+- GitHub Pages compatibility
+- clean separation of concerns
+- scalability for future upgrades
+
+---
+
+### 🧠 Supabase Integration Completed
+Connected the frontend to Supabase and implemented:
+
+- keyword search (`ilike`)
+- state filtering
+- LGA filtering
+- school level filtering
+- settlement type filtering
+
+The app now behaves like a real-time database query engine.
+
+---
+
+### 🇳🇬 Nigeria State System Fixed
+Resolved missing/unstable state filters by:
+
+- replacing dynamic loading with a **hardcoded list of 36 states + FCT**
+- ensuring consistency with database values
+
+This improved:
+- reliability
+- performance
+- UX responsiveness
+
+---
+
+### ⚡ Cascading Filters (State → LGA)
+Implemented dependent filtering:
+
+- selecting a state dynamically loads its LGAs
+- filters combine seamlessly
+
+This introduced structured geographic querying into the system.
+
+---
+
+### 🧼 JavaScript Refactor & Stability Improvements
+
+Refactored `script.js` to improve:
+
+- error handling (Supabase responses)
+- null safety (`??` and array checks)
+- rendering performance (DocumentFragment)
+- debounce logic for search input
+
+Result:
+- smoother UX
+- reduced API load
+- no crashes on bad data
+
+---
+
+### ⚙️ Performance Optimization
+
+- added debounced search (300ms)
+- limited results to 50 per query
+- optimized DOM updates
+
+The app can now handle **100,000+ records efficiently**.
+
+---
+
+### 📄 Legal & Documentation Setup
+
+- created Terms & Conditions page
+- structured `/docs` folder
+
+Prepares the project for public deployment and future scaling.
+
+---
+
+## 🎯 Current System Capabilities
+
+- 🔍 Search schools by name
+- 🌍 Filter by state and LGA
+- 🏫 Filter by level (primary, secondary, tertiary)
+- 🏙 Filter by settlement type (urban/rural)
+- ⚡ Real-time Supabase queries
+- 📊 Dynamic results rendering
+
+---
+
+## 🧠 Key Insight
+
+This project has evolved from a simple frontend UI into a:
+
+> **Database-driven search engine prototype for Nigerian schools**
+
+---
+
+## 🚀 Next Steps (Day 9 Preview)
+
+- Instant search (no submit button)
+- Infinite scroll / pagination
+- AI-powered recommendations
+- Map-based school explorer
+- Admin dashboard for data management
+
+---
 
 📜 License
 This project is licensed under the MIT License, encouraging open-source collaboration and community growth within the Nigerian tech ecosystem.
