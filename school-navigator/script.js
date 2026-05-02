@@ -23,11 +23,10 @@ const resultCount = document.getElementById("resultCount");
 const emptyState = document.getElementById("emptyState");
 
 // =========================
-// STATE CONTROL (ANTI-BUG CORE)
+// STATE
 // =========================
 let currentPage = 0;
 let isSearching = false;
-let requestId = 0;
 const PAGE_SIZE = 50;
 
 // =========================
@@ -42,7 +41,7 @@ function debounce(fn, delay = 300) {
 }
 
 // =========================
-// RESET UI (SAFE)
+// RESET UI
 // =========================
 function resetSearchUI() {
   currentPage = 0;
@@ -51,7 +50,20 @@ function resetSearchUI() {
 }
 
 // =========================
-// LOAD LGAs (FIXED RPC SAFE)
+// REMOVE DUPLICATES (IMPORTANT FIX)
+// =========================
+function uniqueById(data) {
+  const seen = new Set();
+  return (data || []).filter(item => {
+    if (!item?.id) return true;
+    if (seen.has(item.id)) return false;
+    seen.add(item.id);
+    return true;
+  });
+}
+
+// =========================
+// LOAD LGAs (RPC FIXED)
 // =========================
 async function loadLGAs(state) {
   lgaFilter.innerHTML = `<option value="">All LGAs</option>`;
@@ -98,61 +110,63 @@ function buildQuery() {
 }
 
 // =========================
-// SEARCH (FULL FIX: NO DUPLICATES, NO RACE CONDITIONS)
+// SEARCH (FULL FIX)
 // =========================
 async function searchSchools(reset = true) {
   if (isSearching) return;
   isSearching = true;
 
-  const thisRequest = ++requestId;
+  if (reset) resetSearchUI();
 
-  try {
-    if (reset) resetSearchUI();
+  const from = currentPage * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
 
-    const from = currentPage * PAGE_SIZE;
-    const to = from + PAGE_SIZE - 1;
+  const { data, error } = await buildQuery()
+    .order("state", { ascending: true })
+    .order("name", { ascending: true })
+    .range(from, to);
 
-    const { data, error } = await buildQuery()
-      .order("state", { ascending: true })
-      .order("name", { ascending: true })
-      .range(from, to);
-
-    // ❌ ignore stale responses
-    if (thisRequest !== requestId) return;
-
-    if (error) {
-      console.error("Search error:", error);
-      return;
-    }
-
-    const results = data || [];
-
-    if (reset) {
-      resultCount.textContent = results.length;
-    }
-
-    if (results.length === 0 && reset) {
-      emptyState.classList.remove("hidden");
-      return;
-    }
-
-    renderResults(results);
-
-    currentPage++;
-  } finally {
+  if (error) {
+    console.error("Search error:", error);
     isSearching = false;
+    return;
   }
+
+  const results = uniqueById(data); // 🔥 CRITICAL FIX
+
+  if (reset) {
+    resultCount.textContent = results.length;
+  }
+
+  if (results.length === 0 && reset) {
+    emptyState.classList.remove("hidden");
+    isSearching = false;
+    return;
+  }
+
+  renderResults(results);
+
+  currentPage++;
+  isSearching = false;
 }
 
 // =========================
-// RENDER RESULTS (SAFE APPEND)
+// RENDER RESULTS (NO DUPLICATES DOM SAFE)
 // =========================
 function renderResults(data) {
   const fragment = document.createDocumentFragment();
 
+  const existingIds = new Set(
+    Array.from(resultsGrid.querySelectorAll(".school-card"))
+      .map(el => el.getAttribute("data-id"))
+  );
+
   data.forEach((school) => {
+    if (school.id && existingIds.has(String(school.id))) return;
+
     const card = document.createElement("div");
     card.className = "school-card";
+    card.setAttribute("data-id", school.id || "");
 
     card.innerHTML = `
       <div class="school-name">${school.name ?? "Unnamed School"}</div>
@@ -168,7 +182,7 @@ function renderResults(data) {
 }
 
 // =========================
-// LOAD MORE
+// LOAD MORE BUTTON
 // =========================
 const loadMoreBtn = document.createElement("button");
 loadMoreBtn.textContent = "Load More";
@@ -189,24 +203,19 @@ input.addEventListener("input", debouncedSearch);
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
-  requestId++; // kill pending requests
   searchSchools(true);
 });
 
 stateFilter.addEventListener("change", () => {
   loadLGAs(stateFilter.value);
-  requestId++;
   searchSchools(true);
 });
 
 [lgaFilter, typeFilter, settlementFilter].forEach((el) => {
-  el.addEventListener("change", () => {
-    requestId++;
-    searchSchools(true);
-  });
+  el.addEventListener("change", () => searchSchools(true));
 });
 
 // =========================
-// INIT (ONLY ONCE SAFE)
+// INIT
 // =========================
 searchSchools(true);
