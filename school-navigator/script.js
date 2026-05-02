@@ -2,7 +2,7 @@
 // SUPABASE INIT
 // =========================
 const SUPABASE_URL = "https://ulqsavnzjzvxqcihsmmv.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVscXNhdm56anp2eHFjaWhzbW12Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NTAwNTgsImV4cCI6MjA5MzEyNjA1OH0.hou0zP6NyY9F9ZlrZIh82_CanIrmzveFaea4aka4gtA";
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
