@@ -57,9 +57,7 @@ async function loadLGAs(state) {
     return;
   }
 
-  const uniqueLGAs = [
-    ...new Set((data || []).map(l => l.lga).filter(Boolean))
-  ].sort();
+  const uniqueLGAs = [...new Set((data || []).map(l => l.lga).filter(Boolean))].sort();
 
   uniqueLGAs.forEach(lga => {
     const opt = document.createElement("option");
@@ -70,58 +68,44 @@ async function loadLGAs(state) {
 }
 
 // =========================
-// BUILD QUERY (FULL SEARCH ENGINE)
+// BUILD QUERY
 // =========================
 function buildQuery() {
-  const keyword = input.value?.trim();
-
   let query = client.from("schools").select("*");
 
-  // =========================
-  // FULL-TEXT SEARCH (PRIMARY)
-  // =========================
+  const keyword = input.value?.trim();
+
+  // Full text search (safe fallback)
   if (keyword) {
     query = query.textSearch("search_vector", keyword, {
       type: "websearch"
     });
   }
 
-  // =========================
-  // FILTERS
-  // =========================
-  if (stateFilter.value) {
-    query = query.eq("state", stateFilter.value);
-  }
-
-  if (lgaFilter.value) {
-    query = query.eq("lga", lgaFilter.value);
-  }
-
-  if (typeFilter.value) {
-    query = query.eq("level", typeFilter.value);
-  }
-
-  if (settlementFilter.value) {
-    query = query.eq("settlement_type", settlementFilter.value);
-  }
+  if (stateFilter.value) query = query.eq("state", stateFilter.value);
+  if (lgaFilter.value) query = query.eq("lga", lgaFilter.value);
+  if (typeFilter.value) query = query.eq("level", typeFilter.value);
+  if (settlementFilter.value) query = query.eq("settlement_type", settlementFilter.value);
 
   return query;
 }
 
 // =========================
-// SEARCH (PAGINATED)
+// SEARCH (PAGINATED + STABLE SORT)
 // =========================
 async function searchSchools(reset = true) {
   if (reset) {
     currentPage = 0;
     resultsGrid.innerHTML = "";
+    emptyState.classList.add("hidden");
   }
 
   const from = currentPage * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
   const { data, error } = await buildQuery()
-    .order("name", { ascending: true })
+    .order("state", { ascending: true })   // stable sorting
+    .order("name", { ascending: true })    // secondary sorting
     .range(from, to);
 
   if (error) {
@@ -129,7 +113,18 @@ async function searchSchools(reset = true) {
     return;
   }
 
-  renderResults(data || [], reset);
+  const results = data || [];
+
+  if (reset) {
+    resultCount.textContent = results.length;
+  }
+
+  if (results.length === 0 && reset) {
+    emptyState.classList.remove("hidden");
+    return;
+  }
+
+  renderResults(results);
 
   currentPage++;
 }
@@ -137,18 +132,7 @@ async function searchSchools(reset = true) {
 // =========================
 // RENDER RESULTS
 // =========================
-function renderResults(data, reset) {
-  if (reset) {
-    resultCount.textContent = data.length;
-  }
-
-  if (!data.length && reset) {
-    emptyState.classList.remove("hidden");
-    return;
-  }
-
-  emptyState.classList.add("hidden");
-
+function renderResults(data) {
   const fragment = document.createDocumentFragment();
 
   data.forEach(school => {
@@ -180,8 +164,7 @@ function renderResults(data, reset) {
 // =========================
 const loadMoreBtn = document.createElement("button");
 loadMoreBtn.textContent = "Load More";
-loadMoreBtn.style.margin = "20px auto";
-loadMoreBtn.style.display = "block";
+loadMoreBtn.className = "load-more";
 
 loadMoreBtn.addEventListener("click", () => {
   searchSchools(false);
